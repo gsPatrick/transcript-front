@@ -1,0 +1,61 @@
+/* src/componentsUser/AssistantHistory/AssistantHistory.module.css */
+
+.tableWrapper { 
+  background-color: #fff; 
+  border-radius: 12px; 
+  border: 1px solid rgba(0, 0, 0, 0.08); 
+  overflow-x: auto;
+}
+.table { 
+  width: 100%; 
+  border-collapse: collapse; 
+  min-width: 700px;
+}
+
+.tableHeaderCell, .tableBodyCell {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--background-soft);
+  color: var(--text-dark);
+  white-space: nowrap;
+}
+
+.tableHeaderCell {
+  color: var(--color-primary);
+  opacity: 0.7;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+}
+
+.tableRow:last-child .tableBodyCell {
+  border-bottom: none;
+}
+
+.formatTag { 
+  font-size: 0.75rem; 
+  font-weight: 700; 
+  padding: 0.2rem 0.6rem; 
+  border-radius: 4px; 
+  color: white; 
+}
+.pdf { background-color: #e53935; }
+.text { background-color: #1e88e5; }
+
+.actionsCell { text-align: right; }
+
+.menuItem { 
+  display: flex; 
+  align-items: center; 
+  gap: 0.75rem; 
+  padding: 0.7rem 1rem; 
+  font-size: 0.9rem; 
+  color: var(--text-dark); 
+  transition: background-color 0.2s ease;
+  width: 100%;
+  border: none;
+  background: none;
+  cursor: pointer;
+  text-align: left;
+}
+.menuItem:hover { background-color: var(--background-soft); }

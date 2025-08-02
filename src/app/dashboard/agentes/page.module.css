@@ -1,0 +1,44 @@
+/* src/app/dashboard/agentes/page.module.css */
+
+.page { animation: fadeInUp 0.5s ease-out; }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3rem; flex-wrap: wrap; gap: 1.5rem; }
+.title { font-size: 2rem; font-weight: 600; color: var(--text-dark); }
+.subtitle { color: var(--color-primary); opacity: 0.8; margin-top: 0.25rem; }
+.ctaButton { display: flex; align-items: center; gap: 0.75rem; background-color: var(--color-accent); color: var(--text-light); padding: 0.8rem 1.5rem; border-radius: 8px; font-weight: 600; transition: all 0.3s ease; border: none; cursor: pointer; }
+.ctaButton:hover { background-color: #0a58b8; transform: translateY(-3px); box-shadow: 0 4px 15px rgba(12, 102, 212, 0.3); }
+
+.section { margin-bottom: 3rem; }
+.sectionTitle { display: flex; align-items: center; gap: 0.75rem; font-size: 1.5rem; font-weight: 600; color: var(--text-dark); margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid #ddd; }
+.agentsGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
+
+.emptyState { background-color: white; border: 2px dashed #ccc; border-radius: 12px; padding: 3rem; text-align: center; }
+.emptyState p { font-size: 1.1rem; color: var(--color-primary); margin-bottom: 1.5rem; }
+
+.agentCardWrapper { display: flex; flex-direction: column; }
+.cardActions { display: flex; border-top: 1px solid #e0e0e0; margin-top: auto; background-color: white; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; }
+.actionButton { flex-grow: 1; display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.8rem; border: none; background-color: transparent; cursor: pointer; font-size: 0.9rem; color: #555; transition: all 0.2s ease; }
+.actionButton:first-child:not(:last-child) { border-right: 1px solid #e0e0e0; }
+.actionButton:hover { background-color: #f8f9fa; color: var(--text-dark); }
+.deleteButton:hover { background-color: #ffebee; color: #c62828; }
+
+/* --- NOVOS ESTILOS --- */
+@keyframes shimmer { 100% { transform: translateX(100%); } }
+.skeleton { background-color: #e9ecef; position: relative; overflow: hidden; border-radius: 8px; }
+.skeleton::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(90deg, #e9ecef, #f6f7f8, #e9ecef); transform: translateX(-100%); animation: shimmer 1.5s infinite; }
+.skeletonTitle { width: 300px; height: 32px; margin-bottom: 0.5rem; }
+.skeletonSubtitle { width: 400px; height: 20px; }
+.skeletonButton { width: 200px; height: 50px; }
+.skeletonSectionTitle { width: 350px; height: 28px; margin-bottom: 1.5rem; }
+.skeletonCard { height: 220px; }
+
+.errorContainer { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; text-align: center; padding: 4rem; background-color: #fff; border-radius: 12px; }
+.errorContainer h2 { color: var(--text-dark); }
+.errorContainer p { color: var(--color-primary); }
+
+/* --- Responsividade --- */
+@media (max-width: 768px) {
+  .header { flex-direction: column; align-items: flex-start; }
+  .title { font-size: 1.8rem; }
+}

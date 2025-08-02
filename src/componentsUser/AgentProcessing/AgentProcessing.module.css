@@ -1,0 +1,61 @@
+/* Animações */
+@keyframes brain-pulse {
+  0% { transform: scale(1); filter: drop-shadow(0 0 5px var(--color-complementary)); }
+  50% { transform: scale(1.05); filter: drop-shadow(0 0 15px var(--color-complementary)); }
+  100% { transform: scale(1); filter: drop-shadow(0 0 5px var(--color-complementary)); }
+}
+
+@keyframes wave-expand {
+  0% { transform: scale(0); opacity: 1; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+@keyframes fadeIn-text {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Container Principal */
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 0;
+}
+
+.brainWrapper {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.brainIcon {
+  font-size: 5rem;
+  color: var(--color-complementary);
+  animation: brain-pulse 2s ease-in-out infinite;
+  z-index: 2;
+}
+
+.wave {
+  position: absolute;
+  border: 2px solid var(--color-complementary);
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  animation: wave-expand 2s linear infinite;
+  z-index: 1;
+}
+
+/* Atrasos para as ondas */
+.wave2 { animation-delay: 0.6s; }
+.wave3 { animation-delay: 1.2s; }
+
+.statusText {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: var(--color-primary);
+  animation: fadeIn-text 1s ease-out;
+}

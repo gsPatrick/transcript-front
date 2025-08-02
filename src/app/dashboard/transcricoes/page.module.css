@@ -1,0 +1,54 @@
+/* src/app/dashboard/transcricoes/page.module.css */
+
+.page { animation: fadeInUp 0.5s ease-out; }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1.5rem; }
+.title { font-size: 2rem; font-weight: 600; color: var(--text-dark); }
+.subtitle { color: var(--color-primary); opacity: 0.8; margin-top: 0.25rem; }
+.ctaButton { display: flex; align-items: center; gap: 0.75rem; background-color: var(--color-accent); color: var(--text-light); padding: 0.8rem 1.5rem; border-radius: 8px; font-weight: 600; transition: all 0.3s ease; }
+.ctaButton:hover { background-color: #0a58b8; transform: translateY(-3px); box-shadow: 0 4px 15px rgba(12, 102, 212, 0.3); }
+
+.controls { display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap; }
+.searchBox { position: relative; flex-grow: 1; min-width: 250px; }
+.searchIcon { position: absolute; top: 50%; left: 1rem; transform: translateY(-50%); color: var(--color-primary); opacity: 0.6; }
+.searchBox input { width: 100%; padding: 0.8rem 1rem 0.8rem 3rem; border-radius: 8px; border: 1px solid #ccc; background-color: white; font-size: 1rem; }
+.filterSelect { padding: 0.8rem 1rem; border-radius: 8px; border: 1px solid #ccc; background-color: white; font-size: 1rem; cursor: pointer; }
+
+.tableWrapper { background-color: #fff; border-radius: 12px; border: 1px solid rgba(0, 0, 0, 0.08); box-shadow: 0 4px 15px rgba(14, 48, 89, 0.05); overflow-x: auto; }
+.table { width: 100%; border-collapse: collapse; min-width: 700px; }
+.tableHeaderCell, .tableBodyCell { padding: 1rem; text-align: left; border-bottom: 1px solid var(--background-soft); color: var(--text-dark); white-space: nowrap; }
+.tableHeaderCell { color: var(--color-primary); opacity: 0.7; font-weight: 600; font-size: 0.9rem; text-transform: uppercase; }
+.tableRow:last-child .tableBodyCell { border-bottom: none; }
+.actionsCell { text-align: right; }
+
+.menuItem { display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 1rem; font-size: 0.9rem; color: var(--text-dark); transition: background-color 0.2s ease; width: 100%; text-align: left; background: none; border: none; cursor: pointer; font-family: inherit; }
+.menuItem:hover { background-color: var(--background-soft); }
+
+.noResults { text-align: center; padding: 3rem; color: var(--color-primary); opacity: 0.7; }
+.status { padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600; display: inline-block; text-transform: capitalize; }
+.completed { background-color: rgba(46, 204, 113, 0.2); color: #27ae60; }
+.processing { background-color: rgba(241, 196, 15, 0.2); color: #f39c12; }
+.failed { background-color: rgba(231, 76, 60, 0.2); color: #e74c3c; }
+
+/* --- NOVOS ESTILOS --- */
+@keyframes shimmer { 100% { transform: translateX(100%); } }
+.skeleton { background-color: #e9ecef; position: relative; overflow: hidden; border-radius: 4px; }
+.skeleton::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(90deg, #e9ecef, #f6f7f8, #e9ecef); transform: translateX(-100%); animation: shimmer 1.5s infinite; }
+.skeletonHeader { height: 20px; width: 80%; }
+.skeletonCell { height: 20px; width: 90%; }
+
+.errorContainer { display: flex; align-items: center; justify-content: center; gap: 1rem; padding: 3rem; background-color: #fff; border-radius: 12px; color: var(--color-primary); font-weight: 500; }
+
+.pagination { display: flex; justify-content: center; align-items: center; gap: 0.5rem; margin-top: 2rem; }
+.pagination button { padding: 0.5rem 1rem; border: 1px solid #ccc; background-color: #fff; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; }
+.pagination button:hover:not(:disabled) { background-color: var(--background-soft); border-color: var(--color-primary); }
+.pagination button:disabled { cursor: not-allowed; opacity: 0.5; }
+.pagination button.active { background-color: var(--color-accent); color: white; border-color: var(--color-accent); font-weight: 600; }
+
+/* --- Responsividade --- */
+@media (max-width: 768px) {
+  .header { flex-direction: column; align-items: flex-start; }
+  .title { font-size: 1.8rem; }
+  .tableHeaderCell, .tableBodyCell { padding: 0.8rem; }
+}

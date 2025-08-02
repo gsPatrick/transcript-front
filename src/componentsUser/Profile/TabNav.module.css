@@ -1,0 +1,43 @@
+.tabNav {
+  display: flex;
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 2rem;
+  overflow-x: auto; /* Garante que as abas possam ser roladas em telas pequenas */
+  -webkit-overflow-scrolling: touch; /* Melhora a experiência de scroll em iOS */
+  scrollbar-width: none; /* Esconde a barra de scroll no Firefox */
+}
+.tabNav::-webkit-scrollbar {
+  display: none; /* Esconde a barra de scroll no Chrome/Safari */
+}
+
+.tabButton {
+  padding: 1rem 1.5rem;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-primary);
+  opacity: 0.7;
+  position: relative;
+  transition: all 0.3s ease;
+  white-space: nowrap; /* Impede que o texto da aba quebre */
+}
+.tabButton:hover {
+  opacity: 1;
+  background-color: var(--background-soft);
+}
+.tabButton.active {
+  opacity: 1;
+  font-weight: 600;
+  color: var(--color-accent);
+}
+.tabButton.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--color-accent);
+}

@@ -1,0 +1,39 @@
+.visualizer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+  gap: 4px;
+}
+
+.bar {
+  width: 6px;
+  height: 10px;
+  background-color: var(--color-accent);
+  opacity: 0.5;
+  border-radius: 3px;
+  animation: quiet 1.5s ease-in-out infinite;
+}
+
+/* Animação para o estado 'gravando' */
+.visualizer.recording .bar {
+  animation: sound-wave 1.2s ease-in-out infinite alternate;
+}
+
+/* Animação para o estado 'parado' */
+@keyframes quiet {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(0.5); }
+}
+
+/* Animação para o estado 'gravando' */
+@keyframes sound-wave {
+  0% { transform: scaleY(0.1); }
+  100% { transform: scaleY(1); }
+}
+
+/* Delay de animação para cada barra criar o efeito de onda */
+.bar:nth-child(2n) { animation-delay: -0.2s; }
+.bar:nth-child(3n) { animation-delay: -0.5s; }
+.bar:nth-child(4n) { animation-delay: -0.8s; }
+.bar:nth-child(5n) { animation-delay: -1s; }

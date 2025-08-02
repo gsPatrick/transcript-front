@@ -1,0 +1,65 @@
+/* src/componentsUser/AssistantCard/AssistantCard.module.css */
+
+.assistantCard {
+  background-color: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 15px rgba(14, 48, 89, 0.05);
+  transition: all 0.3s ease;
+  height: 100%; /* Garante que os cards na mesma linha tenham a mesma altura */
+}
+.assistantCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(14, 48, 89, 0.1);
+}
+
+.cardHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.iconWrapper {
+  font-size: 1.5rem;
+  padding: 0.8rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.system .iconWrapper {
+  background-color: var(--background-soft);
+  color: var(--color-accent);
+}
+.user .iconWrapper {
+  background-color: #e8eaf6; /* Um roxo claro para diferenciar */
+  color: #3f51b5;
+}
+
+.titleWrapper { flex-grow: 1; }
+.titleWrapper h4 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: 0.25rem;
+}
+.outputTag {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  background-color: #eee;
+  color: #555;
+  display: inline-block;
+}
+
+.description {
+  font-size: 0.95rem;
+  color: var(--color-primary);
+  line-height: 1.6;
+  flex-grow: 1;
+  margin-bottom: 1.5rem;
+}

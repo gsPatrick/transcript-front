@@ -1,0 +1,157 @@
+/* src/componentsUser/Header/Header.module.css */
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 70px;
+  background-color: var(--color-primary-dark);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 1000;
+  transition: all 0.3s ease;
+}
+
+.logoContainer a {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+}
+
+.logoText {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--text-light);
+}
+
+.logoIcon {
+  filter: brightness(0) invert(1);
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 100%;
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  color: var(--background-soft);
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+  white-space: nowrap; /* Impede que o texto quebre linha */
+}
+.navLink:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-light);
+}
+.navLink.active {
+  background-color: var(--color-accent);
+  color: var(--text-light);
+  font-weight: 600;
+}
+
+/* --- Ações de Usuário --- */
+.userActionsDesktop {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.logoutLink { color: #ffadad; }
+.logoutLink:hover { background-color: rgba(231, 76, 60, 0.5); color: white; }
+
+/* Esconde elementos específicos do mobile na versão desktop */
+.mobileDivider, .mobileOnlyLink {
+  display: none;
+}
+
+/* --- Botão do Menu Mobile --- */
+.menuToggle {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 1.8rem; /* Aumenta o tamanho do ícone */
+  color: var(--text-light);
+  cursor: pointer;
+  z-index: 1010;
+  padding: 0.5rem;
+}
+
+
+/* --- RESPONSIVIDADE (MENU SANDUÍCHE) --- */
+@media (max-width: 1024px) {
+  .nav {
+    /* Estilos do container do menu mobile */
+    position: fixed;
+    top: 70px;
+    left: 0;
+    width: 100%;
+    height: calc(100vh - 70px); /* Ocupa o resto da tela */
+    background-color: var(--color-primary-dark);
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    padding: 1rem;
+    gap: 0.5rem;
+    
+    /* Animação de entrada */
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .nav.navOpen {
+    transform: translateX(0); /* Mostra o menu */
+  }
+
+  .nav .navLink {
+    padding: 1rem;
+    font-size: 1.1rem;
+  }
+  
+  .menuToggle {
+    display: block;
+  }
+  
+  /* Esconde ações de usuário da barra no mobile */
+  .userActionsDesktop {
+    display: none; 
+  }
+
+  /* Mostra os links de usuário DENTRO do menu mobile */
+  .mobileOnlyLink {
+    display: flex;
+  }
+
+  /* Estilo do divisor no menu mobile */
+  .mobileDivider {
+    display: block;
+    height: 1px;
+    background-color: rgba(255, 255, 255, 0.1);
+    margin: 1rem 0;
+  }
+
+  .logoutLinkMobile {
+    color: #ffadad;
+  }
+  .logoutLinkMobile:hover {
+    background-color: rgba(231, 76, 60, 0.5); 
+    color: white;
+  }
+}
+
+@media (max-width: 768px) {
+    .header { padding: 0 1rem; }
+    .logoText { display: none; }
+    .userActionsLabel { display: none; } /* Esconde texto dos botões de usuário em telas médias */
+}

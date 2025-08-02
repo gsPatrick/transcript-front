@@ -1,0 +1,55 @@
+/* src/componentsAdmin/SettingsForm/SettingsForm.module.css */
+
+.form { display: flex; flex-direction: column; gap: 1.5rem; }
+.formGroup label { color: #333; margin-bottom: 0.5rem; font-weight: 500; font-size: 1rem; }
+
+/* --- NOVO ESTILO --- */
+.helpText {
+  font-size: 0.9rem;
+  color: #555;
+  margin-bottom: 0.75rem;
+  background-color: #f0f0f0;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+}
+.helpText code {
+  font-family: var(--font-roboto-mono);
+  background-color: #ddd;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+}
+
+.inputWrapper { position: relative; }
+.inputWrapper input {
+  width: 100%;
+  background-color: #f8f9fa;
+  border: 1px solid #ccc;
+  color: var(--text-dark);
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: var(--font-roboto-mono);
+}
+.inputWrapper input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(12, 102, 212, 0.15);
+}
+.toggleButton {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  color: #888;
+}
+.formActions { display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1rem; border-top: 1px solid #eee; padding-top: 1.5rem; }
+.cancelButton, .saveButton { padding: 0.8rem 1.5rem; border-radius: 8px; font-weight: 600; border: none; cursor: pointer; transition: all 0.3s ease; }
+.cancelButton { background-color: #eee; color: #555; }
+.cancelButton:hover { background-color: #ddd; }
+.saveButton { background-color: var(--color-accent); color: white; }
+.saveButton:hover:not(:disabled) { background-color: #0a58b8; }
+.saveButton:disabled { background-color: #0a4a9c; cursor: not-allowed; }

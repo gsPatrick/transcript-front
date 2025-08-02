@@ -1,0 +1,410 @@
+/* src/app/dashboard/nova-transcricao/page.module.css */
+
+.page {
+  max-width: 900px;
+  margin: 0 auto;
+  animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.title {
+  font-size: 2.2rem;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.subtitle {
+  color: var(--color-primary);
+  opacity: 0.8;
+  margin-top: 0.5rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Etapa 1: Escolha Inicial */
+.choiceContainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.choiceCard {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.choiceCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.07);
+  border-color: var(--color-accent);
+}
+
+.choiceCard svg {
+  color: var(--color-accent);
+  margin-bottom: 1rem;
+}
+
+.choiceCard h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.choiceCard p {
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+/* Etapa 2: Gravando */
+.recordingContainer {
+  background: white;
+  border-radius: 12px;
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.recordingIndicator {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #e74c3c;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.recDot {
+  width: 12px;
+  height: 12px;
+  background-color: #e74c3c;
+  border-radius: 50%;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+.recordingTimer {
+  font-size: 2.5rem;
+  font-weight: 300;
+  font-family: var(--font-roboto-mono);
+  color: var(--text-dark);
+}
+
+.stopButton {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background-color 0.2s;
+}
+
+.stopButton:hover {
+  background-color: #c0392b;
+}
+
+/* Etapa 3 e 4: Status do Processo */
+.statusContainer {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  border: 1px solid #e2e8f0;
+}
+
+.filePreview {
+  padding: 1rem;
+  background-color: #f3f4f6;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.filePreview span {
+  font-weight: 500;
+  flex-grow: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.removeButton {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #9ca3af;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.removeButton:hover {
+  color: #ef4444;
+}
+
+.progressWrapper {
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+.progressWrapper p {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.progressBar {
+  height: 8px;
+  background-color: #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progressBar div {
+  height: 100%;
+  background-color: var(--color-accent);
+  transition: width 0.3s ease;
+}
+
+.transcribingAnimation {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem 0;
+  color: var(--text-dark);
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Etapa 5: Transcrição Concluída e Seleção de Assistente */
+.finalStepContainer {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem; /* Aumenta o espaçamento */
+}
+.finalStepContainer h3 {
+  font-size: 1.8rem; /* Aumenta o tamanho do título */
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+.finalStepContainer h4 {
+  font-size: 1.3rem; /* Aumenta o tamanho do subtítulo */
+  font-weight: 600;
+  margin-top: 1rem;
+  text-align: left; /* Alinha à esquerda */
+  color: var(--text-dark);
+}
+.finalStepContainer p {
+  text-align: center;
+  color: #6b7280;
+  margin-bottom: 1.5rem;
+}
+.transcriptionPreview {
+  width: 100%;
+  min-height: 150px; /* Garante altura mínima */
+  max-height: 300px; /* Limita altura para não ocupar demais */
+  background-color: #f9fafb;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 1rem;
+  font-family: var(--font-roboto-mono);
+  font-size: 0.95rem; /* Um pouco maior */
+  line-height: 1.6;
+  resize: vertical; /* Permite redimensionar verticalmente */
+  overflow-y: auto; /* Adiciona scroll se o conteúdo for grande */
+  color: var(--text-dark);
+}
+
+.assistantSelectionGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.25rem; /* Aumenta o espaçamento entre os cards */
+  margin-bottom: 1rem;
+}
+
+.assistantCardOption {
+  display: block; /* Para que o label ocupe todo o espaço do grid */
+  cursor: pointer;
+  position: relative;
+  border-radius: 12px; /* Mantém o border-radius do card */
+  transition: all 0.2s ease;
+}
+.assistantCardOption:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+}
+.assistantCardOption.selected {
+  border: 2px solid var(--color-accent); /* Borda mais visível quando selecionado */
+  box-shadow: 0 0 0 4px rgba(12, 102, 212, 0.2); /* Sombra para indicar seleção */
+}
+.assistantCardOption input[type="radio"] {
+  position: absolute; /* Esconde o radio button padrão */
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.noAssistants {
+  text-align: center;
+  color: #888;
+  padding: 1rem;
+  font-style: italic;
+}
+
+.outputFormatOptions {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center; /* Centraliza as opções */
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+}
+.outputFormatOptions label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-dark);
+  cursor: pointer;
+}
+.outputFormatOptions input[type="radio"] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--color-primary);
+  border-radius: 50%;
+  outline: none;
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+}
+.outputFormatOptions input[type="radio"]:checked {
+  border-color: var(--color-accent);
+}
+.outputFormatOptions input[type="radio"]:checked::before {
+  content: '';
+  width: 10px;
+  height: 10px;
+  background-color: var(--color-accent);
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.runAssistantButton {
+  background-color: var(--color-accent);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 1rem 2rem; /* Aumenta o padding */
+  font-size: 1.1rem; /* Fonte maior */
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  transition: all 0.3s ease;
+  width: 100%; /* Ocupa a largura total */
+}
+.runAssistantButton:hover:not(:disabled) {
+  background-color: #0a58b8;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(12, 102, 212, 0.2);
+}
+.runAssistantButton:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.resetButton {
+  background: none;
+  border: 1px solid #ddd;
+  color: #666;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+  margin-top: 1.5rem;
+}
+.resetButton:hover {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+
+/* === Responsividade === */
+@media (max-width: 768px) {
+  .choiceContainer {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  .header {
+    text-align: left;
+  }
+  .title {
+    font-size: 1.8rem;
+  }
+  .finalStepContainer h3 {
+    font-size: 1.5rem;
+  }
+  .finalStepContainer h4 {
+    font-size: 1.1rem;
+  }
+  .runAssistantButton {
+    font-size: 1rem;
+    padding: 0.8rem 1.5rem;
+  }
+}

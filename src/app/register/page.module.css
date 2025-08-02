@@ -1,0 +1,126 @@
+/* src/app/register/page.module.css */
+
+.form { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 1.5rem; 
+}
+
+/* --- ADICIONADO PARA CONSISTÊNCIA --- */
+.errorBox {
+  background-color: rgba(231, 76, 60, 0.2);
+  border: 1px solid rgba(231, 76, 60, 0.5);
+  color: #ffadad;
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 0.9rem;
+  font-weight: 500;
+  width: 100%;
+}
+
+.formGroup { 
+  display: flex; 
+  flex-direction: column; 
+}
+
+.formGroup label { 
+  color: var(--background-soft); 
+  margin-bottom: 0.5rem; 
+  font-size: 0.9rem; 
+}
+
+.formGroup input {
+  background-color: var(--color-primary-dark);
+  border: 1px solid rgba(12, 102, 212, 0.3);
+  color: var(--text-light);
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.formGroup input:focus {
+  outline: none;
+  border-color: var(--color-complementary);
+  box-shadow: 0 0 10px rgba(109, 214, 225, 0.3);
+}
+
+.formGroup input:disabled {
+  background-color: #2a4a70;
+  cursor: not-allowed;
+}
+
+.submitButton {
+  background: var(--color-accent);
+  color: var(--text-light);
+  font-size: 1.1rem;
+  font-weight: 600;
+  padding: 0.9rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  margin-top: 0.5rem; /* Espaço adicional antes do botão */
+  transition: all 0.3s ease;
+}
+
+.submitButton:hover {
+  background-color: #0a58b8;
+  transform: translateY(-3px);
+  box-shadow: 0 4px 15px rgba(12, 102, 212, 0.3);
+}
+
+.submitButton:disabled {
+  background-color: #0a4a9c;
+  cursor: not-allowed;
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.redirectLink { 
+  text-align: center; 
+  margin-top: 1.5rem; 
+  color: var(--background-soft); 
+  font-size: 0.9rem; 
+}
+
+.redirectLink a { 
+  color: var(--color-complementary); 
+  font-weight: 500; 
+}
+
+.redirectLink a:hover { 
+  text-decoration: underline; 
+  color: white; 
+}
+
+/* Estilo específico para o card de plano */
+.planInfoBox {
+  background: rgba(13, 67, 134, 0.3);
+  text-align: center;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+  border: 1px solid rgba(12, 102, 212, 0.2);
+}
+
+.planInfoBox p {
+  color: var(--background-soft);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.planInfoBox strong {
+  color: var(--color-complementary);
+  font-weight: 600;
+}
+
+.pageWrapper {
+  padding-top: 120px; /* Espaço para o header que é 'position: absolute' */
+  padding-bottom: 4rem;
+  background-color: var(--color-primary-darkest);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

@@ -1,0 +1,103 @@
+/* src/componentsAdmin/UserModals/UserModals.module.css */
+
+/* Estilos para o Modal de Detalhes */
+.detailsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.detailItem {
+  background-color: #f8f9fa;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid #eee;
+}
+
+.label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #555;
+  margin-bottom: 0.25rem;
+}
+
+.value {
+  font-size: 1rem;
+  color: var(--text-dark);
+  word-break: break-all;
+}
+
+/* Estilos para os Modais de Formulário (Editar, Atribuir Plano) */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.formGroup label {
+  color: var(--text-dark);
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.formGroup input,
+.formGroup select {
+  background-color: #f8f9fa;
+  border: 1px solid #ccc;
+  color: var(--text-dark);
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.formGroup input:focus,
+.formGroup select:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(12, 102, 212, 0.15);
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+  border-top: 1px solid #eee;
+  padding-top: 1.5rem;
+}
+
+.cancelButton,
+.saveButton {
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cancelButton {
+  background-color: #eee;
+  color: #555;
+}
+.cancelButton:hover {
+  background-color: #ddd;
+}
+
+.saveButton {
+  background-color: var(--color-accent);
+  color: white;
+}
+.saveButton:hover:not(:disabled) {
+  background-color: #0a58b8;
+}
+.saveButton:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}

@@ -1,0 +1,90 @@
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  width: 250px;
+  background-color: var(--theme-light-card-bg); /* Fundo branco */
+  border-right: 1px solid var(--theme-light-border); /* Borda clara */
+  padding: 1.5rem 0;
+  height: 100vh;
+  position: fixed;
+  top: 0; left: 0;
+  transition: width 0.3s ease;
+  z-index: 100; /* Garante que a sidebar fique acima do conteúdo */
+}
+
+.logoContainer {
+  display: flex; /* Para centralizar o logo quando a sidebar encolher */
+  justify-content: center;
+  align-items: center;
+  height: 40px; /* Altura fixa para evitar pulos */
+  margin-bottom: 3rem;
+}
+
+.nav {
+  flex-grow: 1;
+}
+
+.nav ul { 
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: var(--theme-light-text-secondary); /* Texto secundário cinza */
+  padding: 1rem 1.5rem;
+  margin: 0.5rem 1rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  font-size: 1.2rem; /* Controla o tamanho do ÍCONE */
+  overflow: hidden; /* Evita que o texto vaze durante a transição */
+  white-space: nowrap; /* Impede a quebra de linha do texto */
+}
+
+.navLink:hover {
+  background-color: var(--theme-light-accent-soft-bg); /* Fundo azul claro no hover */
+  color: var(--theme-light-accent); /* Texto azul no hover */
+}
+
+.navLink.active {
+  background-color: var(--theme-light-accent); /* Fundo azul no estado ativo */
+  color: var(--theme-light-card-bg); /* Texto branco no estado ativo */
+  box-shadow: 0 4px 15px rgba(12, 102, 212, 0.3);
+}
+
+.navLabel {
+  font-size: 1rem;
+  font-weight: 500;
+  transition: opacity 0.2s ease; /* Adiciona uma transição suave para o texto */
+}
+
+.logoutContainer {
+  margin-top: auto;
+}
+
+/* --- ALTERAÇÕES PARA RESPONSIVIDADE --- */
+@media (max-width: 768px) {
+  .sidebar { 
+    width: 80px; /* Largura da sidebar comprimida */
+  }
+
+  /* Esconde o texto da label */
+  .navLabel { 
+    opacity: 0;
+    display: none; 
+  }
+
+  /* Centraliza o ícone e ajusta o link */
+  .navLink {
+    justify-content: center;
+    padding: 1rem; /* Ajusta o padding para a versão comprimida */
+    font-size: 1.5rem; /* Aumenta um pouco o ícone para melhor toque */
+  }
+
+  .logoContainer {
+    margin-bottom: 2.8rem;
+  }
+}

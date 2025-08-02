@@ -1,0 +1,147 @@
+/* --- Animações Cinematográficas --- */
+@keyframes fadeInUp-dramatic {
+  from { opacity: 0; transform: translateY(60px); filter: blur(5px); }
+  to { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+@keyframes chaos-to-order {
+  0% { opacity: 0.3; transform: scale(1.5) rotate(0deg); }
+  40% { opacity: 0.1; transform: scale(1) rotate(45deg); }
+  100% { opacity: 0; transform: scale(0.5) rotate(90deg); }
+}
+
+@keyframes grid-reveal {
+  0% { opacity: 0; mask-position: 50% 100%; }
+  100% { opacity: 0.2; mask-position: 50% 0%; }
+}
+
+@keyframes arrow-nudge {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(5px); }
+}
+
+/* --- Seção Principal --- */
+.ctaSection {
+  padding: 8rem 2rem;
+  background-color: var(--color-primary-darkest);
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+}
+
+/* Camada de Vinheta para foco */
+.vignette {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  box-shadow: inset 0 0 150px rgba(0,0,0,0.5);
+  z-index: 2;
+}
+
+/* Background Animado - Fase 1: Linhas Caóticas */
+.chaoticLines {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background-image: 
+    repeating-linear-gradient(45deg, rgba(13, 67, 134, 0.2) 0, rgba(13, 67, 134, 0.2) 1px, transparent 1px, transparent 20px),
+    repeating-linear-gradient(-45deg, rgba(13, 67, 134, 0.2) 0, rgba(13, 67, 134, 0.2) 1px, transparent 1px, transparent 20px);
+  opacity: 0;
+}
+.inView .chaoticLines {
+  animation: chaos-to-order 4s ease-out 0.2s forwards;
+}
+
+/* Background Animado - Fase 2: Grade Ordenada */
+.orderedGrid {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background-image: 
+    linear-gradient(var(--color-accent) 1px, transparent 1px),
+    linear-gradient(to right, var(--color-accent) 1px, transparent 1px);
+  background-size: 50px 50px;
+  opacity: 0;
+  mask-image: radial-gradient(circle, white 50%, transparent 100%);
+  mask-size: 200%;
+  mask-position: 50% 100%;
+}
+.inView .orderedGrid {
+  animation: grid-reveal 3s ease-in-out 1s forwards;
+}
+
+/* Conteúdo */
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.title {
+  font-size: 3.2rem;
+  font-weight: 700;
+  color: var(--text-light);
+  line-height: 1.2;
+  margin-bottom: 1.5rem;
+  opacity: 0;
+}
+.inView .title {
+  animation: fadeInUp-dramatic 1.5s cubic-bezier(0.19, 1, 0.22, 1) 0.8s forwards;
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  color: var(--background-soft);
+  max-width: 600px;
+  line-height: 1.7;
+  margin-bottom: 3rem;
+  opacity: 0;
+}
+.inView .subtitle {
+  animation: fadeInUp-dramatic 1.5s cubic-bezier(0.19, 1, 0.22, 1) 1s forwards;
+}
+
+/* Botão de CTA */
+.ctaButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.2rem 2.5rem;
+  background-color: transparent;
+  color: var(--text-light);
+  border: 2px solid var(--color-complementary);
+  border-radius: 50px; /* Bordas arredondadas para um look mais moderno */
+  font-size: 1.1rem;
+  font-weight: 600;
+  transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+  opacity: 0;
+  transform: translateY(60px);
+}
+.inView .ctaButton {
+  animation: fadeInUp-dramatic 1.5s cubic-bezier(0.19, 1, 0.22, 1) 1.2s forwards;
+}
+
+.ctaButton:hover {
+  background-color: var(--color-complementary);
+  color: var(--color-primary-darkest);
+  box-shadow: 0 0 30px rgba(109, 214, 225, 0.5);
+  transform: translateY(-5px);
+}
+
+.arrowIcon {
+  font-size: 1.5rem;
+  transition: transform 0.3s ease;
+}
+
+.ctaButton:hover .arrowIcon {
+  animation: arrow-nudge 1s ease-in-out infinite;
+}
+
+/* --- Responsividade --- */
+@media (max-width: 768px) {
+  .ctaSection { padding: 6rem 1.5rem; }
+  .title { font-size: 2.5rem; }
+  .subtitle { font-size: 1.1rem; }
+  .ctaButton { font-size: 1rem; padding: 1rem 2rem; }
+}

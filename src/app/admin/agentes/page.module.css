@@ -1,0 +1,44 @@
+/* src/app/admin/agentes/page.module.css */
+
+.page { animation: fadeInUp 0.5s ease-out; }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+.header {
+  margin-bottom: 2rem; border-bottom: 1px solid #ddd; padding-bottom: 1.5rem;
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem;
+}
+.header h1 { font-size: 2rem; font-weight: 700; color: var(--text-dark); }
+.header p { font-size: 1rem; color: #555; margin-top: 0.25rem; }
+.ctaButton { display: flex; align-items: center; gap: 0.5rem; background-color: var(--color-accent); color: white; border: none; border-radius: 8px; padding: 0.8rem 1.2rem; font-weight: 600; cursor: pointer; transition: background-color 0.3s ease; }
+.ctaButton:hover { background-color: #0a58b8; }
+
+.section { margin-top: 2.5rem; }
+.sectionTitle { display: flex; align-items: center; gap: 0.75rem; font-size: 1.5rem; font-weight: 600; color: var(--text-dark); margin-bottom: 1.5rem; }
+
+.tableWrapper { background-color: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); overflow-x: auto; }
+.table { width: 100%; border-collapse: collapse; min-width: 700px; }
+.table th, .table td { padding: 1rem 1.5rem; text-align: left; border-bottom: 1px solid #f0f0f0; }
+.table th { background-color: #f8f9fa; font-size: 0.85rem; font-weight: 600; color: #555; text-transform: uppercase; }
+.table tbody tr:last-child td { border-bottom: none; }
+.table tbody tr:hover { background-color: #f8f9fa; }
+
+.agentName { font-weight: 600; color: var(--text-dark); }
+.promptCell { font-family: var(--font-roboto-mono); font-size: 0.9rem; color: #666; max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.actionsCell { text-align: right; }
+
+.menuItem { display: flex; width: 100%; align-items: center; gap: 0.75rem; padding: 0.7rem 1rem; font-size: 0.9rem; color: var(--text-dark); background: none; border: none; cursor: pointer; text-align: left; transition: background-color 0.2s ease; }
+.menuItem:hover { background-color: #f0f0f0; }
+
+.replicateButton { display: flex; align-items: center; gap: 0.5rem; background-color: #e8eaf6; color: #3f51b5; border: none; border-radius: 6px; padding: 0.6rem 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
+.replicateButton:hover { background-color: #c5cae9; }
+
+/* SKELETON & ERROR STYLES */
+@keyframes shimmer { 100% { transform: translateX(100%); } }
+.skeleton { background-color: #e9ecef; position: relative; overflow: hidden; border-radius: 8px; }
+.skeleton::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(90deg, #e9ecef, #f6f7f8, #e9ecef); transform: translateX(-100%); animation: shimmer 1.5s infinite; }
+.skeletonTitle { width: 300px; height: 32px; margin-bottom: 0.5rem; }
+.skeletonSubtitle { width: 400px; height: 20px; }
+.skeletonButton { width: 220px; height: 48px; }
+.skeletonSectionTitle { width: 350px; height: 28px; margin-bottom: 1.5rem; }
+.skeletonTable { width: 100%; height: 150px; }
+.errorContainer { display: flex; align-items: center; justify-content: center; gap: 1rem; padding: 3rem; background-color: #fff; border-radius: 12px; color: var(--color-primary); font-weight: 500; }

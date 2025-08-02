@@ -1,0 +1,68 @@
+/* src/app/admin/page.module.css */
+
+.page { animation: fadeInUp 0.5s ease-out; }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+.header { margin-bottom: 2.5rem; }
+.header h1 { font-size: 2.2rem; font-weight: 700; color: var(--text-dark); }
+.header p { font-size: 1.1rem; color: #555; margin-top: 0.5rem; }
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.statCard {
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem; /* Aumentado o gap */
+  transition: all 0.3s ease;
+}
+.statCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(14, 48, 89, 0.1);
+}
+
+.iconWrapper {
+  font-size: 2rem;
+  color: var(--color-accent);
+  background-color: var(--background-soft);
+  padding: 1rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0; /* Impede que o ícone encolha */
+}
+.infoWrapper { display: flex; flex-direction: column; }
+.value { font-size: 1.8rem; font-weight: 700; color: var(--text-dark); }
+.title { font-size: 1rem; color: #666; }
+.detail { font-size: 0.85rem; color: #27ae60; font-weight: 500; }
+
+.chartContainer { background-color: white; padding: 2rem; border-radius: 12px; border: 1px solid #e0e0e0; }
+.chartContainer h2 { font-size: 1.5rem; font-weight: 600; color: var(--text-dark); margin-bottom: 2rem; }
+.chartPlaceholder { height: 300px; display: flex; align-items: center; justify-content: center; background-color: #f8f9fa; border-radius: 8px; color: #aaa; }
+
+/* --- NOVOS ESTILOS PARA SKELETON E ERRO --- */
+@keyframes shimmer { 100% { transform: translateX(100%); } }
+.skeleton { background-color: #e9ecef; position: relative; overflow: hidden; border-radius: 8px; }
+.skeleton::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(90deg, #e9ecef, #f6f7f8, #e9ecef); transform: translateX(-100%); animation: shimmer 1.5s infinite; }
+
+.skeletonTitle { width: 400px; height: 36px; margin-bottom: 1rem; }
+.skeletonSubtitle { width: 500px; height: 22px; }
+.skeletonCard { height: 100px; border-radius: 12px; }
+.skeletonSectionTitle { width: 40%; height: 28px; margin-bottom: 2rem; }
+.skeletonChart { height: 300px; }
+
+.errorContainer {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; padding: 4rem 2rem; background-color: #fff;
+  border-radius: 12px; color: var(--color-primary);
+}
+.errorContainer h2 { font-size: 1.5rem; margin: 1rem 0 0.5rem; color: var(--text-dark); }

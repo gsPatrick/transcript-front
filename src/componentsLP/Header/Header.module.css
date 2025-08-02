@@ -1,0 +1,215 @@
+/* src/componentsLP/Header/Header.module.css */
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 1rem 2rem;
+  z-index: 1000;
+  background: rgba(14, 48, 89, 0.8); /* Azul Noturno com transparência */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(13, 67, 134, 0.2);
+  animation: fadeIn 0.8s ease-out forwards;
+}
+
+
+/* Estilo para quando o header fica fixo (pode ser adicionado via JS no scroll) */
+.header.sticky {
+  position: fixed;
+  background-color: var(--color-primary-darkest);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo a {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.logoText {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-light);
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
+}
+
+.navLink {
+  color: var(--background-soft);
+  font-weight: 500;
+  font-size: 1.05rem;
+  transition: color 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.navLink:hover {
+  color: var(--text-light);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.loginButton {
+  background: none;
+  border: none;
+  color: var(--background-soft);
+  font-size: 1.05rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  font-family: inherit; /* Garante que o botão use a fonte correta */
+}
+
+.loginButton:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-light);
+}
+
+.ctaButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: var(--color-accent);
+  color: var(--text-light);
+  padding: 0.7rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.ctaButton:hover {
+  background-color: var(--color-complementary);
+  color: var(--color-primary-darkest);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(12, 102, 212, 0.3);
+}
+
+.menuToggle {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--text-light);
+  font-size: 2rem;
+  cursor: pointer;
+  z-index: 1010;
+}
+
+/* --- Estilos para botões dinâmicos no menu mobile --- */
+.mobileDivider {
+  display: none; /* Escondido por padrão */
+  height: 1px;
+  background-color: rgba(255, 255, 255, 0.1);
+  margin: 1rem 0;
+}
+
+.loginButtonMobile,
+.ctaButtonMobile,
+.logoutButtonMobile {
+  display: none; /* Escondido por padrão, aparece apenas no menu mobile */
+  justify-content: center;
+  width: 100%;
+  padding: 1rem;
+  font-size: 1.1rem;
+}
+
+.logoutButtonMobile {
+  background: none;
+  border: none;
+  color: #ffadad;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: center;
+}
+.logoutButtonMobile:hover {
+  background-color: rgba(231, 76, 60, 0.2);
+}
+
+/* --- RESPONSIVIDADE --- */
+@media (max-width: 768px) {
+  .nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: var(--color-primary-darkest);
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-in-out;
+  }
+
+  .nav.navOpen {
+    transform: translateX(0);
+  }
+
+  .navLink {
+    font-size: 1.5rem;
+  }
+
+  .actions {
+    gap: 1.5rem;
+  }
+
+  /* Esconde os botões de ação do desktop */
+  .loginButton,
+  .ctaButton {
+    display: none;
+  }
+
+  .menuToggle {
+    display: block;
+  }
+  
+  /* Mostra os botões específicos do mobile DENTRO do menu */
+  .mobileDivider,
+  .loginButtonMobile,
+  .ctaButtonMobile,
+  .logoutButtonMobile {
+    display: flex;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0 1.5rem;
+  }
+
+  .logoText {
+    display: none;
+  }
+}

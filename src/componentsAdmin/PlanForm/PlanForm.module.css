@@ -1,0 +1,109 @@
+/* --- CSS CORRIGIDO E MELHORADO --- */
+.form { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 1.5rem; 
+}
+
+.formSection {
+  /* Usado para agrupar os campos principais */
+}
+
+.formGrid { 
+  display: grid; 
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Grid responsivo */
+  gap: 1.5rem; 
+}
+
+.permissionsGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.formGroup { 
+  display: flex; 
+  flex-direction: column; 
+}
+.fullWidth { 
+  grid-column: 1 / -1; 
+}
+.formGroup label { 
+  color: #333; 
+  margin-bottom: 0.5rem; 
+  font-weight: 500; 
+  font-size: 0.9rem; 
+}
+.formGroup input, .formGroup textarea { 
+  background-color: #f8f9fa; 
+  border: 1px solid #ccc; 
+  color: var(--text-dark); 
+  padding: 0.8rem 1rem; 
+  border-radius: 8px; 
+  font-size: 1rem; 
+}
+.checkboxGroup { 
+  flex-direction: row; 
+  align-items: center; 
+  gap: 0.75rem; 
+  background-color: #f8f9fa;
+  padding: 0.8rem;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+.checkboxGroup input { 
+  width: auto; 
+  height: 18px; /* Aumenta o tamanho do checkbox */
+  width: 18px;
+}
+.checkboxGroup label {
+  margin-bottom: 0;
+  font-weight: normal;
+  cursor: pointer;
+}
+
+.fieldset { 
+  border: 1px solid #ddd; 
+  border-radius: 8px; 
+  padding: 1.5rem; 
+}
+.fieldset legend { 
+  font-weight: 600; 
+  padding: 0 0.5rem; 
+  color: var(--text-dark); 
+}
+.helpText { 
+  font-size: 0.85rem; 
+  color: #666; 
+  margin-top: -0.5rem; 
+  margin-bottom: 1rem; 
+  grid-column: 1 / -1; 
+}
+.formActions { 
+  display: flex; 
+  justify-content: flex-end; 
+  gap: 1rem; 
+  margin-top: 1rem; 
+  border-top: 1px solid #eee; 
+  padding-top: 1.5rem; 
+  position: sticky; /* Garante que as ações fiquem visíveis */
+  bottom: -1.5rem; /* Compensa o padding do pai */
+  background-color: white;
+  margin-left: -1.5rem;
+  margin-right: -1.5rem;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  margin-bottom: -1.5rem;
+}
+.cancelButton, .saveButton { 
+  padding: 0.8rem 1.5rem; 
+  border-radius: 8px; 
+  font-weight: 600; 
+  border: none; 
+  cursor: pointer; 
+  transition: all 0.3s ease; 
+}
+.cancelButton { background-color: #eee; color: #555; }
+.cancelButton:hover { background-color: #ddd; }
+.saveButton { background-color: var(--color-accent); color: white; }
+.saveButton:hover { background-color: #0a58b8; }

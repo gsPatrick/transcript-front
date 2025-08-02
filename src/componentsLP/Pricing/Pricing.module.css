@@ -1,0 +1,196 @@
+/* --- Animações --- */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Seção Principal --- */
+.pricingSection {
+  padding: 6rem 2rem;
+  background-color: var(--color-primary-darkest);
+  position: relative;
+  overflow: hidden;
+}
+.pricingSection::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  height: 50%;
+  background: radial-gradient(circle, rgba(13, 67, 134, 0.1) 0%, rgba(14, 48, 89, 0) 70%);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+/* Header da Seção */
+.sectionHeader {
+  text-align: center;
+  margin-bottom: 4rem;
+  opacity: 0;
+}
+.inView .sectionHeader { animation: fadeInUp 0.8s ease-out 0.2s forwards; }
+.title {
+  font-size: 2.8rem;
+  font-weight: 700;
+  color: var(--text-light);
+  margin-bottom: 1rem;
+}
+.subtitle {
+  font-size: 1.2rem;
+  color: var(--background-soft);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Grid de Planos */
+.plansGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  align-items: center; /* Alinha os cards caso tenham alturas diferentes */
+}
+
+/* Estilo do Card Padrão */
+.planCard {
+  background: var(--color-primary-dark);
+  padding: 2.5rem 2rem;
+  border-radius: 16px;
+  border: 1px solid rgba(12, 102, 212, 0.2);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  opacity: 0;
+  transform: translateY(40px);
+}
+.planCard:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* Animação em cascata dos cards */
+.inView .planCard:nth-child(1) { animation: fadeInUp 0.8s ease-out 0.4s forwards; }
+.inView .planCard:nth-child(2) { animation: fadeInUp 0.8s ease-out 0.6s forwards; }
+.inView .planCard:nth-child(3) { animation: fadeInUp 0.8s ease-out 0.8s forwards; }
+
+/* Estilo do Card Destacado */
+.highlighted {
+  transform: scale(1.05);
+  border: 2px solid var(--color-complementary);
+  box-shadow: 0 0 40px rgba(109, 214, 225, 0.2);
+}
+.highlighted:hover {
+  transform: translateY(-10px) scale(1.05); /* Mantém a escala no hover */
+  box-shadow: 0 15px 40px rgba(109, 214, 225, 0.3);
+}
+
+.popularBadge {
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--color-complementary);
+  color: var(--color-primary-darkest);
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.planHeader { text-align: center; margin-bottom: 2rem; }
+.planHeader h3 { font-size: 1.8rem; color: var(--text-light); margin-bottom: 0.5rem; }
+.planHeader p { color: var(--background-soft); font-size: 0.95rem; }
+
+.planPrice {
+  text-align: center;
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  color: var(--text-light);
+}
+.priceCurrency { font-size: 1.5rem; font-weight: 500; margin-right: 0.25rem; }
+.priceAmount { font-size: 3.5rem; font-weight: 700; line-height: 1; }
+.pricePeriod { font-size: 1rem; color: var(--background-soft); margin-left: 0.25rem; }
+.priceCustom { font-size: 1.8rem; font-weight: 600; }
+
+.planFeatures {
+  list-style: none;
+  margin-bottom: 2.5rem;
+  flex-grow: 1; /* Faz com que esta área cresça, empurrando o botão para baixo */
+}
+.planFeatures li {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  color: var(--background-soft);
+}
+.featureIcon { color: var(--color-complementary); flex-shrink: 0; }
+
+/* Botões */
+.btn {
+  width: 100%;
+  padding: 1rem;
+  text-align: center;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+.btnPrimary {
+  background: var(--color-complementary);
+  color: var(--color-primary-darkest);
+}
+.btnPrimary:hover {
+  background: white;
+}
+.btnSecondary {
+  background: transparent;
+  border: 1px solid var(--color-accent);
+  color: var(--text-light);
+}
+.btnSecondary:hover {
+  background: var(--color-accent);
+}
+
+/* Botão "Ver todos os planos" */
+.viewAllWrapper {
+  text-align: center;
+  margin-top: 3rem;
+  opacity: 0;
+}
+.inView .viewAllWrapper {
+  animation: fadeInUp 0.8s ease-out 1s forwards;
+}
+.viewAllButton {
+  color: var(--background-soft);
+  font-weight: 500;
+  border-bottom: 1px solid transparent;
+  transition: all 0.3s ease;
+}
+.viewAllButton:hover {
+  color: var(--color-complementary);
+  border-bottom-color: var(--color-complementary);
+}
+
+/* --- Responsividade --- */
+@media (max-width: 992px) {
+  .plansGrid {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+  .highlighted {
+    transform: scale(1); /* Reseta a escala para evitar quebra de layout */
+  }
+  .planCard:hover {
+    transform: translateY(-5px);
+  }
+}

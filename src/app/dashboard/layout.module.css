@@ -1,0 +1,19 @@
+.dashboardContainer {
+  /* Não precisamos mais de display: flex aqui */
+  background-color: var(--background-dashboard);
+}
+
+.mainContent {
+  padding: 70px 3rem 2rem; /* <<< ALTERADO: Adiciona padding-top para não ficar atrás do header */
+  min-height: 100vh;
+  /* --- REMOVIDO --- */
+  /* margin-left: 250px;  */
+}
+
+@media (max-width: 768px) {
+  .mainContent {
+    padding: 70px 1.5rem 1.5rem; /* <<< ALTERADO */
+    /* --- REMOVIDO --- */
+    /* margin-left: 80px; */
+  }
+}

@@ -1,0 +1,23 @@
+/* src/app/admin/layout.module.css */
+
+.adminContainer {
+  background-color: #F4F7FC;
+  min-height: 100vh;
+}
+
+.mainContent {
+  /* Adiciona padding no topo para não ficar atrás do header fixo de 70px */
+  padding: calc(70px + 2.5rem) 2.5rem 2.5rem; 
+}
+
+@media (max-width: 1024px) {
+  .mainContent {
+    padding: calc(70px + 1.5rem) 1.5rem 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+    .mainContent {
+        padding: calc(70px + 1rem) 1rem 1rem;
+    }
+}

@@ -1,0 +1,122 @@
+/* src/componentsLP/Shared/PlanCard/PlanCard.module.css */
+
+.planCardLink {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  height: 100%;
+}
+
+.planCard {
+  background: linear-gradient(160deg, #13315C, #0B2545);
+  padding: 2.5rem 2rem;
+  border-radius: 16px;
+  border: 1px solid rgba(12, 102, 212, 0.3);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* Garante que todos os cards tenham a mesma altura na grade */
+}
+
+.planCard:hover {
+  transform: translateY(-10px) scale(1.02);
+  box-shadow: 0 12px 40px rgba(12, 102, 212, 0.2);
+  border-color: var(--color-complementary);
+}
+
+.cardHeader {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.planName {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--text-light);
+  margin-bottom: 0.5rem;
+}
+
+.planDescription {
+  font-size: 0.95rem;
+  color: var(--background-soft);
+  opacity: 0.8;
+  min-height: 40px; /* Garante altura mínima para descrições de tamanhos diferentes */
+}
+
+.priceSection {
+  text-align: center;
+  margin-bottom: 2.5rem;
+  color: var(--text-light);
+}
+
+.priceCurrency {
+  font-size: 1.5rem;
+  font-weight: 500;
+  vertical-align: super;
+  margin-right: 0.25rem;
+  opacity: 0.8;
+}
+
+.priceAmount {
+  font-size: 4rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.priceCents {
+  font-size: 1.5rem;
+  font-weight: 500;
+  opacity: 0.8;
+}
+
+.pricePeriod {
+  font-size: 1rem;
+  font-weight: 400;
+  margin-left: 0.5rem;
+  opacity: 0.7;
+}
+
+.featuresList {
+  list-style: none;
+  margin-bottom: 2rem;
+  flex-grow: 1; /* Faz esta seção ocupar o espaço disponível, empurrando o botão para baixo */
+}
+
+.featureItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1rem;
+  color: var(--background-soft);
+  margin-bottom: 1rem;
+}
+
+.featureIcon {
+  color: var(--color-complementary);
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.ctaWrapper {
+  margin-top: auto; /* Garante que o botão fique no final */
+}
+
+.ctaButton {
+  width: 100%;
+  background-color: var(--color-accent);
+  color: var(--text-light);
+  padding: 1rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.ctaButton:hover {
+  background-color: var(--color-complementary);
+  color: var(--color-primary-darkest);
+  transform: scale(1.05);
+}

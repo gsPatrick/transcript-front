@@ -1,0 +1,131 @@
+/* src/componentsUser/SubscriptionCTA/SubscriptionCTA.module.css */
+
+.ctaContainer {
+  background: linear-gradient(45deg, var(--color-primary-dark), var(--color-accent));
+  color: white;
+  padding: 2.5rem;
+  border-radius: 16px;
+  margin-bottom: 3rem;
+  box-shadow: 0 10px 30px rgba(12, 102, 212, 0.3);
+}
+
+.ctaHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.ctaIcon {
+  font-size: 2.5rem;
+  flex-shrink: 0;
+  color: var(--color-complementary);
+}
+
+.ctaTitle {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.ctaSubtitle {
+  font-size: 1rem;
+  opacity: 0.9;
+  max-width: 600px;
+}
+
+.plansGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.planOption {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+}
+
+.planOption:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  transform: translateY(-5px);
+}
+
+.renewOption {
+  background-color: rgba(109, 214, 225, 0.2);
+  border-color: var(--color-complementary);
+}
+
+.planOption h4 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.price {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  color: var(--color-complementary);
+}
+
+.price span {
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-left: 0.25rem;
+}
+
+.description {
+  font-size: 0.9rem;
+  opacity: 0.8;
+  flex-grow: 1;
+  margin-bottom: 1.5rem;
+}
+
+.chooseButton {
+  background-color: #fff;
+  color: var(--color-accent);
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  padding: 0.8rem 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.chooseButton:hover {
+  background-color: var(--background-soft);
+  color: var(--color-primary-dark);
+}
+
+.chooseButton:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.footerLink {
+  text-align: center;
+}
+
+.footerLink a {
+  color: #fff;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.footerLink a:hover {
+  color: var(--color-complementary);
+  text-decoration: underline;
+}

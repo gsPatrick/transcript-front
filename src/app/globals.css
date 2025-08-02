@@ -1,33 +1,32 @@
+/* Definindo a paleta de cores como variáveis CSS globais */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --color-primary: #0d4386; /* Azul Profundo Principal */
+  --color-primary-dark: #013c85; /* Azul Escuro Rico */
+  --color-primary-darkest: #0e3059; /* Azul Noturno */
+  --color-accent: #0c66d4; /* Azul Vibrante de Destaques */
+  --color-complementary: #6dd6e1; /* Azul Água */
+  --background-soft: #d7f3f8; /* Azul Claro/Background Suave */
+  --text-light: #ffffff;
+  --text-dark: #0e3059;
+
+    --background-dashboard: #daf3f8; 
+
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Reset básico e estilos globais */
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
 }
 
 html,
 body {
   max-width: 100vw;
   overflow-x: hidden;
-}
-
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
+  font-family: var(--font-inter), sans-serif; /* A fonte será adicionada no layout.js */
+  background-color: var(--color-primary-darkest); /* Fundo escuro para um tema cinematográfico */
+  color: var(--text-light);
 }
 
 a {
@@ -35,8 +34,14 @@ a {
   text-decoration: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
+/* Animação de entrada sutil para elementos */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

@@ -1,0 +1,53 @@
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideIn { from { transform: translateY(-30px) scale(0.98); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
+
+.overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-color: rgba(14, 48, 89, 0.6);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+  padding: 1rem; /* Reduzido para dar mais espaço em telas pequenas */
+}
+
+.modalContent {
+  background-color: white;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 700px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  animation: slideIn 0.4s ease-out;
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+}
+
+.header {
+  padding: 1rem 1.5rem; /* Ajustado */
+  border-bottom: 1px solid #eee;
+  flex-shrink: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.header h3 { font-size: 1.25rem; font-weight: 600; color: var(--text-dark); } /* Reduzido */
+.closeButton { background: none; border: none; font-size: 1.5rem; color: #888; cursor: pointer; transition: color 0.2s ease; }
+.closeButton:hover { color: var(--text-dark); }
+
+.body {
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+/* --- Responsividade --- */
+@media (max-width: 768px) {
+  .header { padding: 1rem; }
+  .header h3 { font-size: 1.1rem; }
+  .body { padding: 1rem; }
+}

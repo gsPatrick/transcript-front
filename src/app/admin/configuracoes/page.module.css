@@ -1,0 +1,34 @@
+/* src/app/admin/configuracoes/page.module.css */
+
+.page { animation: fadeInUp 0.5s ease-out; }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+.header { margin-bottom: 2.5rem; }
+.header h1 { font-size: 2rem; font-weight: 700; color: var(--text-dark); }
+.header p { font-size: 1rem; color: #555; margin-top: 0.25rem; }
+
+.settingsList { display: flex; flex-direction: column; gap: 1.5rem; }
+
+.settingItem {
+  background-color: white; border-radius: 12px; border: 1px solid #e0e0e0;
+  padding: 1.5rem; display: flex; flex-wrap: wrap; justify-content: space-between;
+  align-items: center; transition: box-shadow 0.3s ease; gap: 1rem;
+}
+.settingItem:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+
+.settingInfo { display: flex; flex-direction: column; gap: 0.5rem; flex-grow: 1; }
+.settingInfo h4 { font-size: 1.1rem; font-weight: 600; color: var(--text-dark); font-family: var(--font-roboto-mono); }
+.settingInfo p { color: #666; }
+.settingValue { background-color: #f8f9fa; padding: 0.5rem 0.8rem; border-radius: 6px; font-family: var(--font-roboto-mono); color: #333; border: 1px solid #ddd; align-self: flex-start; }
+
+.editButton { display: flex; align-items: center; gap: 0.5rem; background-color: transparent; color: var(--color-primary); border: 1px solid #ccc; border-radius: 8px; padding: 0.7rem 1.2rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; flex-shrink: 0; }
+.editButton:hover { background-color: var(--background-soft); border-color: var(--color-accent); color: var(--color-accent); }
+
+/* SKELETON & ERROR STYLES */
+@keyframes shimmer { 100% { transform: translateX(100%); } }
+.skeleton { background-color: #e9ecef; position: relative; overflow: hidden; border-radius: 8px; }
+.skeleton::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(90deg, #e9ecef, #f6f7f8, #e9ecef); transform: translateX(-100%); animation: shimmer 1.5s infinite; }
+.skeletonTitle { width: 400px; height: 32px; margin-bottom: 1rem; }
+.skeletonSubtitle { width: 500px; height: 20px; }
+.skeletonSettingItem { width: 100%; height: 130px; }
+.errorContainer { display: flex; align-items: center; justify-content: center; gap: 1rem; padding: 3rem; background-color: #fff; border-radius: 12px; color: var(--color-primary); font-weight: 500; }
