@@ -23,7 +23,7 @@ export default function AdminSidebar() {
     <aside className={styles.sidebar}>
       <div className={styles.logoContainer}>
         <Link href="/admin">
-          <Image src="/logo.png" width={100} height={50} alt="TranscriMedX Admin" />
+          <Image src="/logo.png" width={100} height={50} alt="Conduta Medx" />
           <span className={styles.logoText}>Admin</span>
         </Link>
       </div>

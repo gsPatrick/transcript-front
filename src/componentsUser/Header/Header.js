@@ -60,7 +60,7 @@ export default function Header() {
     <header className={styles.header}>
       <div className={styles.logoContainer}>
         <Link href="/dashboard" onClick={() => setIsMenuOpen(false)}>
-          <Image src="/logo.png" width={150} height={50} alt="TranscriMedX" className={styles.logoIcon} />
+          <Image src="/logo.png" width={150} height={50} alt="Conduta Medx" className={styles.logoIcon} />
         </Link>
       </div>
 

@@ -59,7 +59,7 @@ export default function Hero() {
              <div className={styles.mockUiHeader}>
               <div className={styles.mockUiHeaderLeft}>
                 <Image src="/logo.png" width={18} height={18} alt="Ícone"/>
-                <span>TranscriMedX</span>
+                <span>Conduta Medx</span>
               </div>
               <div className={styles.mockUiHeaderRight}>
                 <span>...</span>
@@ -67,7 +67,7 @@ export default function Hero() {
             </div>
             <Image
               src="/hero-doctor.png"
-              alt="Médico utilizando o TranscriMedX em um tablet"
+              alt="Médico utilizando o Conduta Medx em um tablet"
               width={620} // Aumentamos o tamanho
               height={620} // Aumentamos o tamanho
               className={styles.heroImage}

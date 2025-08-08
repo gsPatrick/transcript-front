@@ -42,8 +42,8 @@ export default function Header() {
       <div className={styles.container}>
         <div className={styles.logo}>
           <Link href="/" onClick={closeMenu}>
-            <Image src="/logo-icon.svg" width={40} height={40} alt="TranscriMedX Icon" />
-            <span className={styles.logoText}>TranscriMedX</span>
+          
+            <span className={styles.logoText}>Conduta Medx</span>
           </Link>
         </div>
 

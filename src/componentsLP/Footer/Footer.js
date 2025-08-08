@@ -15,7 +15,7 @@ export default function Footer() {
             <Link href="/" className={styles.logo}>
               <Image 
                 src="/logo.png"
-                alt="Ícone TranscriMedX"
+                alt="Ícone Conduta Medx"
                 width={150}
                 height={50}
               />

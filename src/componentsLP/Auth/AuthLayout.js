@@ -11,7 +11,7 @@ export default function AuthLayout({ title, children }) {
           <Link href="/">
             <Image
               src="/logo.png"
-              alt="Ícone TranscriMedX"
+              alt="Ícone Conduta Medx"
               width={100}
               height={50}
             />

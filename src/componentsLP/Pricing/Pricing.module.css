@@ -144,6 +144,8 @@
   border-radius: 8px;
   font-weight: 600;
   transition: all 0.3s ease;
+  text-decoration: none; /* Garante que o Link não tenha sublinhado */
+  display: inline-block; /* Necessário para o Link se comportar como botão */
 }
 .btnPrimary {
   background: var(--color-complementary);
@@ -192,5 +194,52 @@
   }
   .planCard:hover {
     transform: translateY(-5px);
+  }
+}
+
+/* --- CLASSES ADICIONADAS PARA LAYOUT DINÂMICO --- */
+
+/* Estilo para a mensagem de status (Carregando/Sem Planos) */
+.statusMessage {
+  text-align: center;
+  padding: 4rem 1rem;
+  background: rgba(13, 67, 134, 0.2);
+  border-radius: 16px;
+  color: var(--text-light);
+}
+.statusMessage h3 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+}
+.statusMessage p {
+  font-size: 1.1rem;
+  color: var(--background-soft);
+}
+
+
+/* Layout dinâmico do Grid de Planos */
+.gridCount1 {
+  grid-template-columns: 1fr;
+  justify-items: center; /* Centraliza o item do grid */
+}
+/* Define uma largura máxima para o card único para não ficar muito largo */
+.gridCount1 > .planCard {
+  max-width: 420px;
+  width: 100%;
+}
+
+.gridCount2 {
+  grid-template-columns: repeat(2, 1fr);
+  max-width: 900px; /* Limita a largura do container para os cards não ficarem muito espaçados */
+  margin: 0 auto; /* Centraliza o container de 2 cards */
+}
+
+/* --- Responsividade para o novo grid de 2 colunas --- */
+@media (max-width: 992px) {
+  /* ... (sua media query existente já cobre isso, mas adicionamos para clareza) ... */
+  .gridCount2 {
+    grid-template-columns: 1fr; /* Volta para 1 coluna em telas menores */
+    max-width: none;
+    margin: 0;
   }
 }

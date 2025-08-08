@@ -43,7 +43,7 @@ export default function AdminHeader() {
     <header className={styles.header}>
       <div className={styles.logoContainer}>
         <Link href="/admin" onClick={() => setIsMenuOpen(false)}>
-          <Image src="/logo.png" width={100} height={50} alt="TranscriMedX Admin" />
+          <Image src="/logo.png" width={100} height={50} alt="Conduta Medx" />
           <span className={styles.logoText}>Admin Panel</span>
         </Link>
       </div>

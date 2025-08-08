@@ -62,7 +62,7 @@ export default function TrustSection() {
         <div className={styles.sectionHeader}>
           <h2 className={styles.title}>Sua Confiança é Nossa Prioridade</h2>
           <p className={styles.subtitle}>
-            Construímos o TranscriMedX sobre pilares de segurança, conformidade e confiabilidade.
+            Construímos o Conduta Medx sobre pilares de segurança, conformidade e confiabilidade.
           </p>
         </div>
 

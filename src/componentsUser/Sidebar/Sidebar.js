@@ -30,7 +30,7 @@ export default function Sidebar() {
     <aside className={styles.sidebar}>
       <div className={styles.logoContainer}>
         <Link href="/dashboard">
-          <Image src="/logo.png" width={100} height={50} alt="TranscriMedX" />
+          <Image src="/logo.png" width={100} height={50} alt="Conduta Medx" />
         </Link>
       </div>
       <nav className={styles.nav}>

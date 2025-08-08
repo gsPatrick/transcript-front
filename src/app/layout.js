@@ -16,7 +16,7 @@ const roboto_mono = Roboto_Mono({
 });
 
 export const metadata = {
-  title: 'TranscriMedX - Transcrição e Análise por IA',
+  title: 'Conduta Medx - Transcrição e Análise por IA',
   description: 'Transforme áudio em insights valiosos com a precisão da inteligência artificial.',
 };
 
