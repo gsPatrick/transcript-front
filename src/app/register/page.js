@@ -1,21 +1,19 @@
-import { Suspense } from 'react';
+// src/app/register/page.js
+
+// A LINHA MAIS IMPORTANTE: Informa ao Next.js que este é um Componente de Cliente.
+'use client';
+
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
-
 import Header from '@/componentsLP/Header/Header';
 import Footer from '@/componentsLP/Footer/Footer';
 import AuthLayout from '@/componentsLP/Auth/AuthLayout';
 import styles from './page.module.css';
-import api, { publicApi } from '@/lib/api';
+import api, { publicApi } from '@/lib/api'; // Importa ambas as instâncias da API
 
-// --- Componente de Cliente Interno ---
-// Todo o seu código original que usa hooks de cliente vai aqui dentro.
-// A diretiva 'use client' é a chave para a correção.
-function RegisterFormContent() {
-  'use client';
-
+export default function RegisterPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const planId = searchParams.get('planId'); // Pega o ID do plano da URL
@@ -104,61 +102,47 @@ function RegisterFormContent() {
 
   return (
     <>
-      {planName && (
-        <div className={styles.planInfoBox}>
-          <p>Você está se inscrevendo no plano: <strong>{planName}</strong></p>
-        </div>
-      )}
-      
-      <form onSubmit={handleSubmit} className={styles.form}>
-        {error && <div className={styles.errorBox}>{error}</div>}
-
-        <div className={styles.formGroup}>
-          <label htmlFor="name">Nome Completo</label>
-          <input type="text" id="name" name="name" value={name} onChange={(e) => setName(e.target.value)} required disabled={isLoading} />
-        </div>
-        
-        <div className={styles.formGroup}>
-          <label htmlFor="email">E-mail</label>
-          <input type="email" id="email" name="email" value={email} onChange={(e) => setEmail(e.target.value)} required disabled={isLoading} />
-        </div>
-        
-        <div className={styles.formGroup}>
-          <label htmlFor="password">Crie sua Senha</label>
-          <input type="password" id="password" name="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength="6" disabled={isLoading} />
-        </div>
-
-        <div className={styles.formGroup}>
-          <label htmlFor="confirmPassword">Confirme sua Senha</label>
-          <input type="password" id="confirmPassword" name="confirmPassword" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required minLength="6" disabled={isLoading} />
-        </div>
-        
-        <button type="submit" className={styles.submitButton} disabled={isLoading}>
-          {isLoading ? 'Processando...' : (planId ? 'Continuar para Pagamento' : 'Criar Minha Conta')}
-        </button>
-      </form>
-      
-      <p className={styles.redirectLink}>
-        Já tem uma conta?{' '}
-        <Link href="/login">Faça Login</Link>
-      </p>
-    </>
-  );
-}
-
-
-// --- Componente de Servidor (Página Principal) ---
-// Este é o componente principal da página. Ele permanece como um "Server Component".
-// Sua responsabilidade é montar o layout e carregar o componente de cliente com Suspense.
-export default function RegisterPage() {
-  return (
-    <>
       <Header />
       <main className={styles.pageWrapper}>
         <AuthLayout title="Crie sua Conta">
-          <Suspense fallback={<div>Carregando...</div>}>
-            <RegisterFormContent />
-          </Suspense>
+          {planName && (
+            <div className={styles.planInfoBox}>
+              <p>Você está se inscrevendo no plano: <strong>{planName}</strong></p>
+            </div>
+          )}
+          
+          <form onSubmit={handleSubmit} className={styles.form}>
+            {error && <div className={styles.errorBox}>{error}</div>}
+
+            <div className={styles.formGroup}>
+              <label htmlFor="name">Nome Completo</label>
+              <input type="text" id="name" name="name" value={name} onChange={(e) => setName(e.target.value)} required disabled={isLoading} />
+            </div>
+            
+            <div className={styles.formGroup}>
+              <label htmlFor="email">E-mail</label>
+              <input type="email" id="email" name="email" value={email} onChange={(e) => setEmail(e.target.value)} required disabled={isLoading} />
+            </div>
+            
+            <div className={styles.formGroup}>
+              <label htmlFor="password">Crie sua Senha</label>
+              <input type="password" id="password" name="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength="6" disabled={isLoading} />
+            </div>
+
+            <div className={styles.formGroup}>
+              <label htmlFor="confirmPassword">Confirme sua Senha</label>
+              <input type="password" id="confirmPassword" name="confirmPassword" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required minLength="6" disabled={isLoading} />
+            </div>
+            
+            <button type="submit" className={styles.submitButton} disabled={isLoading}>
+              {isLoading ? 'Processando...' : (planId ? 'Continuar para Pagamento' : 'Criar Minha Conta')}
+            </button>
+          </form>
+          
+          <p className={styles.redirectLink}>
+            Já tem uma conta?{' '}
+            <Link href="/login">Faça Login</Link>
+          </p>
         </AuthLayout>
       </main>
       <Footer />
