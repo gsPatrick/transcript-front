@@ -1,7 +1,13 @@
+// src/componentsUser/StatCard/StatCard.js
+
 import styles from './StatCard.module.css';
 
 export default function StatCard({ icon, title, value, limit, unit }) {
-  const percentage = limit > 0 ? (value / limit) * 100 : 0;
+  // Garante que o valor e o limite sejam números para o cálculo
+  const numericValue = Number(value) || 0;
+  const numericLimit = Number(limit) || 0;
+  
+  const percentage = numericLimit > 0 ? (numericValue / numericLimit) * 100 : 0;
 
   return (
     <div className={styles.statCard}>
@@ -10,9 +16,12 @@ export default function StatCard({ icon, title, value, limit, unit }) {
         <span className={styles.title}>{title}</span>
       </div>
       <div className={styles.value}>
-        {value} <span className={styles.limit}>/ {limit > 0 ? limit : '∞'} {unit}</span>
+        {numericValue.toLocaleString('pt-BR')} 
+        <span className={styles.limit}>
+          / {numericLimit > 0 ? numericLimit.toLocaleString('pt-BR') : '∞'} {unit}
+        </span>
       </div>
-      {limit > 0 && (
+      {numericLimit > 0 && (
         <div className={styles.progressBar}>
           <div className={styles.progress} style={{ width: `${percentage}%` }}></div>
         </div>

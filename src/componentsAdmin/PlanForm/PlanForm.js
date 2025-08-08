@@ -1,35 +1,35 @@
 // src/componentsAdmin/PlanForm/PlanForm.js
+'use client';
 
+import { useState } from 'react';
 import styles from './PlanForm.module.css';
 
 export default function PlanForm({ plan, onSave, onCancel }) {
   const isEditing = !!plan;
+
+  // Estado para controlar a visibilidade dos campos condicionais
+  const [allowCreation, setAllowCreation] = useState(plan?.features?.allowUserAssistantCreation || false);
 
   const handleSubmit = (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
     const data = Object.fromEntries(formData.entries());
     
-    // Constrói o objeto final com a estrutura correta, incluindo TODAS as features
     const planData = {
       name: data.name,
       description: data.description,
       price: parseFloat(data.price),
       durationInDays: parseInt(data.durationInDays, 10),
       features: {
-        // Features de Transcrição
         maxAudioTranscriptions: parseInt(data.maxAudioTranscriptions, 10),
         maxTranscriptionMinutes: parseInt(data.maxTranscriptionMinutes, 10),
-
-        // <<< ADICIONADO: Features de Assistente >>>
-        maxAssistants: parseInt(data.maxAssistants, 10),
+        maxAssistantUses: parseInt(data.maxAssistantUses, 10), 
         allowUserAssistantCreation: data.allowUserAssistantCreation === 'on',
+        maxAssistants: data.allowUserAssistantCreation === 'on' ? parseInt(data.maxAssistants, 10) : 0,
         assistantCreationResetPeriod: data.assistantCreationResetPeriod,
-
-        // Features de Token (agora aplicáveis aos assistentes)
-        maxAgentUses: parseInt(data.maxAgentUses, 10), // Reutilizamos este campo para o limite de uso de assistentes
-        useSystemTokenForSystemAgents: data.useSystemTokenForSystemAgents === 'on',
-        allowUserProvideOwnAgentToken: data.allowUserProvideOwnAgentToken === 'on',
+        useSystemTokenForAI: data.useSystemTokenForAI === 'on', 
+        allowUserProvideOwnToken: data.allowUserProvideOwnToken === 'on',
+        allowedSystemAssistantIds: [], // Este campo agora é gerenciado no form de assistente
       }
     };
     onSave(planData);
@@ -37,82 +37,48 @@ export default function PlanForm({ plan, onSave, onCancel }) {
 
   return (
     <form onSubmit={handleSubmit} className={styles.form}>
-      <div className={styles.formSection}>
+      <fieldset className={styles.fieldset}>
+        <legend>Detalhes do Plano</legend>
         <div className={styles.formGrid}>
-          <div className={styles.formGroup}>
-            <label htmlFor="name">Nome do Plano</label>
-            <input type="text" id="name" name="name" defaultValue={plan?.name || ''} required />
-          </div>
-          <div className={styles.formGroup}>
-            <label htmlFor="price">Preço (R$)</label>
-            <input type="number" id="price" name="price" defaultValue={plan?.price || ''} step="0.01" required />
-          </div>
-          <div className={styles.formGroup}>
-            <label htmlFor="durationInDays">Duração (dias)</label>
-            <input type="number" id="durationInDays" name="durationInDays" defaultValue={plan?.durationInDays || 30} required />
-          </div>
-          <div className={`${styles.formGroup} ${styles.fullWidth}`}>
-            <label htmlFor="description">Descrição</label>
-            <textarea id="description" name="description" defaultValue={plan?.description || ''} rows="3"></textarea>
-          </div>
+          <div className={styles.formGroup}><label htmlFor="name">Nome do Plano</label><input type="text" id="name" name="name" defaultValue={plan?.name || ''} required /></div>
+          <div className={styles.formGroup}><label htmlFor="price">Preço (R$)</label><input type="number" id="price" name="price" defaultValue={plan?.price || ''} step="0.01" required /></div>
+          <div className={styles.formGroup}><label htmlFor="durationInDays">Duração (dias)</label><input type="number" id="durationInDays" name="durationInDays" defaultValue={plan?.durationInDays || 30} required /></div>
+          <div className={`${styles.formGroup} ${styles.fullWidth}`}><label htmlFor="description">Descrição</label><textarea id="description" name="description" defaultValue={plan?.description || ''} rows="3"></textarea></div>
         </div>
-      </div>
+      </fieldset>
 
       <fieldset className={styles.fieldset}>
-        <legend>Limites de Uso</legend>
+        <legend>Limites de Transcrição</legend>
         <p className={styles.helpText}>Use -1 para valores ilimitados.</p>
         <div className={styles.formGrid}>
-          <div className={styles.formGroup}>
-            <label htmlFor="maxAudioTranscriptions">Máx. Transcrições</label>
-            <input type="number" id="maxAudioTranscriptions" name="maxAudioTranscriptions" defaultValue={plan?.features?.maxAudioTranscriptions ?? ''} required />
-          </div>
-          <div className={styles.formGroup}>
-            <label htmlFor="maxTranscriptionMinutes">Máx. Minutos</label>
-            <input type="number" id="maxTranscriptionMinutes" name="maxTranscriptionMinutes" defaultValue={plan?.features?.maxTranscriptionMinutes ?? ''} required />
-          </div>
-          <div className={styles.formGroup}>
-            <label htmlFor="maxAgentUses">Máx. Usos de Assistente (com token do sistema)</label>
-            <input type="number" id="maxAgentUses" name="maxAgentUses" defaultValue={plan?.features?.maxAgentUses ?? ''} required />
-          </div>
+          <div className={styles.formGroup}><label htmlFor="maxAudioTranscriptions">Máx. Áudios</label><input type="number" id="maxAudioTranscriptions" name="maxAudioTranscriptions" defaultValue={plan?.features?.maxAudioTranscriptions ?? -1} required /></div>
+          <div className={styles.formGroup}><label htmlFor="maxTranscriptionMinutes">Máx. Minutos</label><input type="number" id="maxTranscriptionMinutes" name="maxTranscriptionMinutes" defaultValue={plan?.features?.maxTranscriptionMinutes ?? -1} required /></div>
         </div>
       </fieldset>
       
-      {/* <<< ADICIONADO: Fieldset para permissões de Assistente >>> */}
       <fieldset className={styles.fieldset}>
-        <legend>Permissões de Assistentes</legend>
-        <div className={styles.permissionsGrid}>
-          <div className={`${styles.formGroup} ${styles.checkboxGroup}`}>
-            <input type="checkbox" id="allowUserAssistantCreation" name="allowUserAssistantCreation" defaultChecked={plan?.features?.allowUserAssistantCreation || false} />
-            <label htmlFor="allowUserAssistantCreation">Permitir que usuários criem seus próprios assistentes?</label>
-          </div>
-          <div className={styles.formGrid}>
-            <div className={styles.formGroup}>
-                <label htmlFor="maxAssistants">Máx. de Assistentes por usuário</label>
-                <input type="number" id="maxAssistants" name="maxAssistants" defaultValue={plan?.features?.maxAssistants ?? 0} required />
-            </div>
-            <div className={styles.formGroup}>
-                <label htmlFor="assistantCreationResetPeriod">Período de Reset da Criação</label>
-                <select id="assistantCreationResetPeriod" name="assistantCreationResetPeriod" defaultValue={plan?.features?.assistantCreationResetPeriod || 'never'}>
-                    <option value="never">Nunca (Limite vitalício)</option>
-                    <option value="monthly">Mensalmente</option>
-                    <option value="yearly">Anualmente</option>
-                </select>
-            </div>
-          </div>
+        <legend>Limites de Assistentes de IA</legend>
+        <p className={styles.helpText}>Controle o uso e a criação de Assistentes de IA.</p>
+        <div className={styles.formGrid}>
+          <div className={styles.formGroup}><label htmlFor="maxAssistantUses">Máx. Usos (c/ token do sistema)</label><input type="number" id="maxAssistantUses" name="maxAssistantUses" defaultValue={plan?.features?.maxAssistantUses ?? 0} required /></div>
         </div>
+        <div className={`${styles.formGroup} ${styles.checkboxGroup}`} style={{marginTop: '1rem'}}>
+          <input type="checkbox" id="allowUserAssistantCreation" name="allowUserAssistantCreation" defaultChecked={allowCreation} onChange={(e) => setAllowCreation(e.target.checked)} />
+          <label htmlFor="allowUserAssistantCreation">Permitir que usuários criem seus próprios Assistentes?</label>
+        </div>
+        {allowCreation && (
+            <div className={styles.formGrid} style={{marginTop: '1rem', borderTop: '1px solid #eee', paddingTop: '1rem'}}>
+                <div className={styles.formGroup}><label htmlFor="maxAssistants">Máx. de Assistentes por usuário</label><input type="number" id="maxAssistants" name="maxAssistants" defaultValue={plan?.features?.maxAssistants ?? 1} required /></div>
+                <div className={styles.formGroup}><label htmlFor="assistantCreationResetPeriod">Período de Reset</label><select id="assistantCreationResetPeriod" name="assistantCreationResetPeriod" defaultValue={plan?.features?.assistantCreationResetPeriod || 'never'}><option value="never">Nunca</option><option value="monthly">Mensal</option></select></div>
+            </div>
+        )}
       </fieldset>
 
       <fieldset className={styles.fieldset}>
-        <legend>Permissões de Tokens</legend>
+        <legend>Permissões de Tokens de IA</legend>
         <div className={styles.permissionsGrid}>
-          <div className={`${styles.formGroup} ${styles.checkboxGroup}`}>
-            <input type="checkbox" id="useSystemTokenForSystemAgents" name="useSystemTokenForSystemAgents" defaultChecked={plan?.features?.useSystemTokenForSystemAgents ?? false} />
-            <label htmlFor="useSystemTokenForSystemAgents">Permitir uso do token do sistema para assistentes do sistema?</label>
-          </div>
-          <div className={`${styles.formGroup} ${styles.checkboxGroup}`}>
-            <input type="checkbox" id="allowUserProvideOwnAgentToken" name="allowUserProvideOwnAgentToken" defaultChecked={plan?.features?.allowUserProvideOwnAgentToken || false} />
-            <label htmlFor="allowUserProvideOwnAgentToken">Permitir que usuários usem seu próprio token (se tiverem)?</label>
-          </div>
+          <div className={`${styles.formGroup} ${styles.checkboxGroup}`}><input type="checkbox" id="useSystemTokenForAI" name="useSystemTokenForAI" defaultChecked={plan?.features?.useSystemTokenForAI ?? true} /><label htmlFor="useSystemTokenForAI">Permitir uso do token da plataforma para Assistentes?</label></div>
+          <div className={`${styles.formGroup} ${styles.checkboxGroup}`}><input type="checkbox" id="allowUserProvideOwnToken" name="allowUserProvideOwnToken" defaultChecked={plan?.features?.allowUserProvideOwnToken || false} /><label htmlFor="allowUserProvideOwnToken">Permitir que usuários usem seu próprio token da OpenAI?</label></div>
         </div>
       </fieldset>
 

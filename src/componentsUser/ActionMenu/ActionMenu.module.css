@@ -1,7 +1,15 @@
+/* src/componentsUser/ActionMenu/ActionMenu.module.css */
+
 .actionMenu {
   position: relative;
   display: inline-block;
 }
+
+/* <<< CORREÇÃO: Adicionado z-index para o estado ativo >>> */
+.actionMenu.active {
+  z-index: 20; /* Eleva o menu ativo acima dos outros elementos */
+}
+
 .menuButton {
   background: none;
   border: none;
@@ -11,6 +19,9 @@
   padding: 0.5rem;
   border-radius: 50%;
   transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .menuButton:hover {
   background-color: var(--background-soft);
@@ -23,7 +34,7 @@
   border-radius: 8px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   border: 1px solid #eee;
-  z-index: 10;
+  z-index: 10; /* z-index do dropdown em si */
   min-width: 180px;
   padding: 0.5rem 0;
   animation: fadeIn 0.2s ease-out;

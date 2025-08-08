@@ -5,9 +5,7 @@
   gap: 1.5rem; 
 }
 
-.formSection {
-  /* Usado para agrupar os campos principais */
-}
+/* Não mais necessário um .formSection */
 
 .formGrid { 
   display: grid; 
@@ -34,7 +32,7 @@
   font-weight: 500; 
   font-size: 0.9rem; 
 }
-.formGroup input, .formGroup textarea { 
+.formGroup input, .formGroup textarea, .formGroup select { /* Adicionado select aqui */
   background-color: #f8f9fa; 
   border: 1px solid #ccc; 
   color: var(--text-dark); 
@@ -77,7 +75,7 @@
   color: #666; 
   margin-top: -0.5rem; 
   margin-bottom: 1rem; 
-  grid-column: 1 / -1; 
+  grid-column: 1 / -1; /* Para helpText dentro de um grid */
 }
 .formActions { 
   display: flex; 
@@ -86,14 +84,15 @@
   margin-top: 1rem; 
   border-top: 1px solid #eee; 
   padding-top: 1.5rem; 
-  position: sticky; /* Garante que as ações fiquem visíveis */
-  bottom: -1.5rem; /* Compensa o padding do pai */
+  position: sticky; 
+  bottom: -1.5rem; 
   background-color: white;
   margin-left: -1.5rem;
   margin-right: -1.5rem;
   padding-left: 1.5rem;
   padding-right: 1.5rem;
   margin-bottom: -1.5rem;
+  z-index: 10; /* Garante que fique acima de outros elementos ao rolar */
 }
 .cancelButton, .saveButton { 
   padding: 0.8rem 1.5rem; 
@@ -107,3 +106,14 @@
 .cancelButton:hover { background-color: #ddd; }
 .saveButton { background-color: var(--color-accent); color: white; }
 .saveButton:hover { background-color: #0a58b8; }
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .formActions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .cancelButton, .saveButton {
+    width: 100%;
+  }
+}

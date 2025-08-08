@@ -1,4 +1,4 @@
-/* src/componentsUser/AssistantForm/AssistantForm.module.css */
+/* src/componentsAdmin/AssistantForm/AdminAssistantForm.module.css */
 
 .formContainer {
   display: flex;
@@ -6,16 +6,14 @@
   gap: 1.5rem;
 }
 
-/* NOVO: Estilo para esconder abas inativas */
 .tabContent {
   animation: fadeIn 0.3s ease-out;
   padding-top: 1rem;
 }
 
 .tabContent.hidden {
-  display: none; /* OU use visibility: hidden; position: absolute; para manter layout */
+  display: none;
 }
-
 
 @keyframes fadeIn {
   from { opacity: 0; }
@@ -45,13 +43,20 @@
   border: 1px solid #ccc;
   font-size: 1rem;
   background-color: #f8f9fa;
+  color: var(--text-dark);
+  transition: all 0.2s ease;
+}
+.formGroup input:focus, .formGroup select:focus, .formGroup textarea:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(12, 102, 212, 0.15);
 }
 .helpText {
   font-size: 0.85rem;
   color: #666;
 }
 
-/* Estratégia */
+/* --- Estilos da Aba de Personalidade e Configurações --- */
 .strategyGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -85,9 +90,6 @@
   color: #555;
   line-height: 1.5;
 }
-
-
-/* Configurações */
 .sliderGroup {
   display: flex;
   flex-direction: column;
@@ -104,29 +106,8 @@
   width: 100%;
   cursor: pointer;
 }
-/* NOVO: Estilo para caixa de informação */
-.infoBox { 
-  background-color: #eff6ff; 
-  border: 1px solid #bfdbfe; 
-  border-radius: 8px; 
-  padding: 1rem; 
-  display: flex; 
-  align-items: flex-start; 
-  gap: 1rem; 
-  margin: 2rem 0; 
-}
-.infoBox svg { 
-  color: #3b82f6; 
-  flex-shrink: 0; 
-  margin-top: 3px; 
-}
-.infoBox span { 
-  color: #1e40af; 
-  font-size: 0.9rem; 
-  line-height: 1.6; 
-}
 
-/* Base de Conhecimento */
+/* --- Estilos da Aba de Conhecimento --- */
 .dropzone {
   border: 2px dashed #ccc;
   border-radius: 8px;
@@ -170,17 +151,15 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-/* NOVO: Estilo para pré-visualização de texto do arquivo */
 .filePreviewText {
   font-size: 0.8rem;
   color: #777;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 150px; /* Limita a largura para não quebrar o layout */
+  max-width: 150px;
   margin-left: 0.5rem;
 }
-
 .fileItem button {
   background: none;
   border: none;
@@ -191,7 +170,6 @@
 .fileItem button:hover {
   color: #c0392b;
 }
-/* NOVO: Estilo para arquivos marcados para deleção */
 .fileItem.markedForDeletion {
   background-color: #ffebeb;
   color: #c0392b;
@@ -199,27 +177,67 @@
   opacity: 0.7;
 }
 
-.filesMarkedForDeletion {
-  margin-top: 1rem;
-  padding: 1rem;
-  border: 1px dashed #e74c3c;
-  border-radius: 8px;
-  background-color: #ffebeb;
-}
-.filesMarkedForDeletion h5 {
-  color: #c0392b;
-  margin-bottom: 0.75rem;
-  font-size: 0.9rem;
-}
-
-
+/* --- Estilos da Aba de Funções --- */
 .comingSoon {
   text-align: center;
   padding: 3rem;
   color: #888;
   font-style: italic;
+  background-color: #f8f9fa;
+  border-radius: 8px;
 }
 
+/* --- Estilos da Aba de Permissões --- */
+.checkboxGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background-color: #f8f9fa;
+  padding: 0.8rem;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+.checkboxGroup input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+.checkboxGroup label {
+  margin-bottom: 0;
+  cursor: pointer;
+  font-weight: normal;
+}
+.plansSelectionGrid {
+  margin-top: 1.5rem;
+  background-color: #fdfdfd;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+.plansSelectionGrid h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: 1rem;
+}
+.planCheckboxItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.planCheckboxItem input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+}
+.planCheckboxItem label {
+  margin-bottom: 0;
+  font-weight: normal;
+  color: #555;
+  cursor: pointer;
+}
+
+/* --- Ações do Formulário --- */
 .formActions {
   display: flex;
   justify-content: flex-end;
@@ -234,6 +252,14 @@
   font-weight: 600;
   border: none;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
-.cancelButton { background-color: #eee; }
+.cancelButton { background-color: #eee; color: #555; }
 .saveButton { background-color: var(--color-accent); color: white; }
+.cancelButton:hover { background-color: #ddd; }
+.saveButton:hover { background-color: #0a58b8; }
+
+/* --- Responsividade --- */
+@media (max-width: 768px) {
+  .grid, .strategyGrid { grid-template-columns: 1fr; }
+}

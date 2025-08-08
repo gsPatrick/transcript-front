@@ -59,3 +59,105 @@
   text-align: left;
 }
 .menuItem:hover { background-color: var(--background-soft); }
+
+
+/* <<< CORREÇÃO DE ESTILO: Estilos para o Modal de Email >>> */
+.emailModalContent {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 0.5rem; /* Adiciona um pouco de padding interno */
+}
+
+.emailModalContent p {
+  margin: 0;
+  color: var(--text-dark);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+.emailModalContent p strong {
+  font-weight: 600;
+  color: var(--color-accent);
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.formGroup label {
+  font-weight: 500;
+  color: var(--text-dark);
+}
+.formGroup input[type="email"] {
+  padding: 0.8rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  background-color: #f8f9fa;
+  color: var(--text-dark);
+  transition: all 0.2s ease;
+}
+.formGroup input[type="email"]:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(12, 102, 212, 0.15);
+}
+
+.radioGroup {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 0.5rem;
+}
+.radioGroup label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-weight: normal;
+}
+.radioGroup input[type="radio"] {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--color-primary);
+  border-radius: 50%;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.radioGroup input[type="radio"]:checked {
+  border-color: var(--color-accent);
+}
+.radioGroup input[type="radio"]:checked::before {
+  content: '';
+  width: 10px;
+  height: 10px;
+  background-color: var(--color-accent);
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  border-top: 1px solid #eee;
+  padding-top: 1.5rem;
+}
+.cancelButton, .saveButton {
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.cancelButton { background-color: #eee; color: #555; }
+.saveButton { background-color: var(--color-accent); color: white; }
+.cancelButton:hover { background-color: #ddd; }
+.saveButton:hover { background-color: #0a58b8; }

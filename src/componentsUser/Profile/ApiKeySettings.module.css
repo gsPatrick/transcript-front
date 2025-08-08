@@ -1,161 +1,114 @@
 /* src/componentsUser/Profile/ApiKeySettings.module.css */
-.formWrapper { 
+.container { 
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.apiKeySection, .featuresSection {
   background: #fff; 
-  padding: 2rem; 
-  border-radius: 12px; 
-  border: 1px solid #eee; 
+  padding: 2.5rem; 
+  border-radius: 16px; 
+  border: 1px solid #eef2f7;
+  box-shadow: 0 8px 30px rgba(14, 48, 89, 0.06);
+}
+
+.cardTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: 2rem;
+}
+.cardTitle svg {
+  color: var(--color-accent);
 }
 
 .infoBanner { 
-  display: flex; 
-  gap: 1rem; 
-  background-color: #eff6ff; 
-  border: 1px solid #bfdbfe; 
-  color: #1e40af; 
-  padding: 1rem; 
-  border-radius: 8px; 
-  margin-bottom: 2rem; 
+  display: flex; gap: 1rem; background-color: #eff6ff; 
+  border: 1px solid #bfdbfe; color: #1e40af; 
+  padding: 1rem; border-radius: 8px; margin-bottom: 2rem; 
   align-items: center;
 }
-.infoBanner a { 
-  font-weight: 600; 
-  text-decoration: underline; 
-  display: inline-flex; 
-  align-items: center; 
-  gap: 0.25rem; 
+.infoBanner a { font-weight: 600; text-decoration: underline; display: inline-flex; align-items: center; gap: 0.25rem; }
+.infoBanner svg { flex-shrink: 0; font-size: 1.2rem; }
+
+.form { display: flex; flex-direction: column; gap: 1.5rem; }
+.formGroup { display: flex; flex-direction: column; }
+.formGroup label { color: var(--text-dark); margin-bottom: 0.5rem; font-weight: 500; }
+.inputGroup { position: relative; }
+.inputGroup input { 
+  background-color: #f8f9fa; border: 1px solid #ccc; 
+  padding: 0.9rem 3.5rem 0.9rem 1rem;
+  border-radius: 8px; font-size: 1rem; 
+  font-family: var(--font-roboto-mono); width: 100%;
 }
-.infoBanner svg { 
-  flex-shrink: 0; 
+.visibilityToggle {
+  position: absolute;
+  right: 1px;
+  top: 1px;
+  bottom: 1px;
+  width: 48px;
+  background: transparent;
+  border: none;
+  border-left: 1px solid #ccc;
+  color: #666;
   font-size: 1.2rem;
+  cursor: pointer;
 }
 
-.apiKeySection { 
-  display: flex; 
-  align-items: flex-end; 
-  gap: 1rem; 
-  flex-wrap: wrap; 
-  margin-bottom: 2.5rem; 
-}
-.formGroup { 
-  flex-grow: 1; 
-}
-.formGroup label { 
-  color: var(--text-dark); 
-  margin-bottom: 0.5rem; 
-  font-weight: 500; 
-  display: block; 
-}
-.inputGroup { 
-  display: flex; 
-}
-.formGroup input { 
-  background-color: #f8f9fa; 
-  border: 1px solid #ccc; 
-  color: var(--text-dark); 
-  padding: 0.8rem 1rem; 
-  border-radius: 8px; 
-  font-size: 1rem; 
-  font-family: var(--font-roboto-mono); 
-  width: 100%; 
-}
-.formGroup input:focus { 
-  outline: none; 
-  border-color: var(--color-accent); 
-  z-index: 1; 
-}
-
+.formActions { display: flex; justify-content: flex-end; gap: 1rem; flex-wrap: wrap; }
 .saveButton, .removeButton { 
-  padding: 0.8rem 1.5rem; 
-  border: none; 
-  border-radius: 8px; 
-  font-weight: 600; 
-  cursor: pointer; 
-  transition: all 0.3s ease; 
-  white-space: nowrap; 
-  height: 45px; /* Alinha altura com o input */
+  padding: 0.8rem 1.5rem; border: none; border-radius: 8px; 
+  font-weight: 600; cursor: pointer; transition: all 0.3s ease; 
 }
-.saveButton { 
-  background-color: var(--color-accent); 
-  color: white; 
-}
-.removeButton { 
-  background-color: #ffebee; 
-  color: #c62828; 
-  border: 1px solid #f8a0a0;
-  margin-left: -1px; /* Sobrepõe a borda do input */
-  border-radius: 0 8px 8px 0;
-}
-.saveButton:disabled, .removeButton:disabled { 
-  opacity: 0.7; 
-  cursor: not-allowed; 
-}
-/* Específico para o layout da imagem */
-.formGroup input {
-  border-radius: 8px;
-}
-.inputGroup input {
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
-}
+.saveButton { background-color: var(--color-accent); color: white; }
+.removeButton { background-color: #ffebee; color: #c62828; }
+.saveButton:disabled { opacity: 0.7; cursor: not-allowed; }
 
+/* Cards de Recursos */
 .featuresGrid { 
   display: grid; 
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
   gap: 1.5rem; 
 }
 .featureCard { 
-  background-color: white; 
-  border: 1px solid #e0e0e0; 
-  border-radius: 12px; 
-  padding: 1.5rem; 
-  display: grid; 
-  grid-template-columns: auto 1fr auto; 
-  align-items: center; 
-  gap: 1rem; 
+  background: var(--color-primary-dark);
+  border: 1px solid rgba(255, 255, 255, 0.1); 
+  border-radius: 12px; padding: 1.5rem; 
+  display: grid; grid-template-columns: auto 1fr; 
+  align-items: center; gap: 1rem 1.5rem;
+  grid-template-rows: auto 1fr;
 }
 .featureIcon { 
-  font-size: 1.5rem; 
-  color: #555; 
+  font-size: 1.8rem; 
+  color: var(--color-complementary);
+  grid-row: 1 / span 2;
 }
-.featureInfo h4 { 
-  font-weight: 600; 
-  color: var(--text-dark); 
-  margin-bottom: 0.25rem; 
-}
-.featureInfo p { 
-  font-size: 0.9rem; 
-  color: #666; 
-  line-height: 1.5; 
-}
-.disabled .featureInfo h4, .disabled .featureInfo p, .disabled .featureIcon { 
-  opacity: 0.6; 
-}
+.featureInfo h4 { font-weight: 600; color: #fff; margin-bottom: 0.25rem; }
+.featureInfo p { font-size: 0.9rem; color: rgba(255, 255, 255, 0.7); line-height: 1.5; }
+.disabled .featureInfo h4, .disabled .featureInfo p, .disabled .featureIcon { opacity: 0.5; }
+
+/* Toggle Switch Moderno */
 .toggleSwitch { 
-  width: 44px; 
-  height: 24px; 
-  position: relative; 
+  width: 44px; height: 24px; 
+  position: relative;
+  grid-column: 2;
+  justify-self: end;
 }
 .toggleTrack { 
-  background-color: #ccc; 
-  width: 100%; 
-  height: 100%; 
-  border-radius: 12px; 
-  transition: background-color 0.3s ease; 
+  background-color: rgba(255, 255, 255, 0.2); 
+  width: 100%; height: 100%; 
+  border-radius: 12px; transition: background-color 0.3s ease; 
 }
 .toggleThumb { 
-  position: absolute; 
-  top: 2px; 
-  left: 2px; 
-  width: 20px; 
-  height: 20px; 
-  background-color: white; 
-  border-radius: 50%; 
+  position: absolute; top: 2px; left: 2px; 
+  width: 20px; height: 20px; 
+  background-color: white; border-radius: 50%; 
   box-shadow: 0 1px 3px rgba(0,0,0,0.2); 
   transition: transform 0.3s ease; 
 }
-.enabled .toggleTrack { 
-  background-color: var(--color-accent); 
-}
-.enabled .toggleThumb { 
-  transform: translateX(20px); 
-}
+.enabled .toggleTrack { background-color: var(--color-complementary); }
+.enabled .toggleThumb { transform: translateX(20px); }

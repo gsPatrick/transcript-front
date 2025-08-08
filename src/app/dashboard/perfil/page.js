@@ -10,7 +10,21 @@ import ProfileInfo from '@/componentsUser/Profile/ProfileInfo';
 import ApiKeySettings from '@/componentsUser/Profile/ApiKeySettings';
 import api from '@/lib/api';
 
-const TABS = ["Perfil", "Configuração de API"];
+const TABS = ["Meu Perfil", "Configuração de API"];
+
+// Componente de Esqueleto para a tela de carregamento
+const SkeletonLoader = ({ activeTab }) => (
+  <div className={styles.skeletonWrapper}>
+    {activeTab === 'Meu Perfil' ? (
+      <>
+        <div className={`${styles.skeleton} ${styles.skeletonCardLarge}`}></div>
+        <div className={`${styles.skeleton} ${styles.skeletonCardSmall}`}></div>
+      </>
+    ) : (
+      <div className={`${styles.skeleton} ${styles.skeletonCardLarge}`}></div>
+    )}
+  </div>
+);
 
 export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState(TABS[0]);
@@ -45,7 +59,7 @@ export default function ProfilePage() {
         payload.password = password;
       }
       const response = await api.put('/users/me', payload);
-      setUserData(response.data.user); // Atualiza o estado com os novos dados
+      setUserData(response.data.user);
       toast.success('Perfil atualizado com sucesso!', { id: toastId });
     } catch (err) {
       const errorMessage = err.response?.data?.message || 'Erro ao atualizar perfil.';
@@ -57,7 +71,7 @@ export default function ProfilePage() {
     const toastId = toast.loading('Salvando chave da API...');
     try {
       await api.post('/users/me/openai-key', { apiKey });
-      setUserData(prev => ({ ...prev, openAiApiKey: apiKey })); // Atualiza a chave localmente
+      setUserData(prev => ({ ...prev, openAiApiKey: apiKey }));
       toast.success('Chave da OpenAI salva com sucesso!', { id: toastId });
     } catch (err) {
       const errorMessage = err.response?.data?.message || 'Erro ao salvar a chave.';
@@ -84,8 +98,8 @@ export default function ProfilePage() {
   return (
     <div className={styles.page}>
       <header className={styles.header}>
-        <h1 className={styles.title}>Meu Perfil</h1>
-        <p className={styles.subtitle}>Gerencie suas informações pessoais e configurações da plataforma.</p>
+        <h1 className={styles.title}>Configurações da Conta</h1>
+        <p className={styles.subtitle}>Gerencie suas informações pessoais, plano e chaves de API.</p>
       </header>
 
       <TabNav tabs={TABS} activeTab={activeTab} onTabChange={setActiveTab} />
@@ -95,7 +109,7 @@ export default function ProfilePage() {
           <SkeletonLoader activeTab={activeTab} />
         ) : (
           <>
-            {activeTab === 'Perfil' && (
+            {activeTab === 'Meu Perfil' && (
               <ProfileInfo user={userWithPlan} onSave={handleUpdateProfile} />
             )}
             {activeTab === 'Configuração de API' && (
@@ -103,6 +117,7 @@ export default function ProfilePage() {
                 apiKey={userData?.openAiApiKey} 
                 onSave={handleUpdateApiKey}
                 onRemove={handleRemoveApiKey}
+                planFeatures={planData?.plan?.features}
               />
             )}
           </>
@@ -111,23 +126,3 @@ export default function ProfilePage() {
     </div>
   );
 }
-
-// Componente de Skeleton para a tela de carregamento
-const SkeletonLoader = ({ activeTab }) => (
-  <div className={styles.skeletonWrapper}>
-    {activeTab === 'Perfil' ? (
-      <>
-        <div className={`${styles.skeleton} ${styles.skeletonInput}`}></div>
-        <div className={`${styles.skeleton} ${styles.skeletonInput}`}></div>
-        <div className={`${styles.skeleton} ${styles.skeletonPlanBox}`}></div>
-        <div className={`${styles.skeleton} ${styles.skeletonButton}`}></div>
-      </>
-    ) : (
-      <>
-        <div className={`${styles.skeleton} ${styles.skeletonText}`}></div>
-        <div className={`${styles.skeleton} ${styles.skeletonInput}`}></div>
-        <div className={`${styles.skeleton} ${styles.skeletonButton}`}></div>
-      </>
-    )}
-  </div>
-);

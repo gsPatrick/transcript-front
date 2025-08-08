@@ -13,6 +13,20 @@
   justify-content: space-between;
   gap: 1rem;
 }
+
+  .noResults {
+    text-align: center;
+    padding: 2rem;
+    color: #888;
+    font-style: italic;
+  }
+  .deleteMenuItem {
+    color: #e74c3c;
+  }
+  .deleteMenuItem:hover {
+    background-color: #ffebee;
+  }
+
 .header h1 { font-size: 2rem; font-weight: 700; color: var(--text-dark); }
 .header p { font-size: 1rem; color: #555; margin-top: 0.25rem; }
 .ctaButton { display: flex; align-items: center; gap: 0.5rem; background-color: var(--color-accent); color: white; border: none; border-radius: 8px; padding: 0.8rem 1.2rem; font-weight: 600; cursor: pointer; transition: background-color 0.3s ease; }

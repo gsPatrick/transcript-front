@@ -1,4 +1,4 @@
-// src/app/dashboard/nova-transcricao/page.js
+// src/app/admin/transcricoes/nova/page.js
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -9,13 +9,13 @@ import styles from './page.module.css';
 import { FiUploadCloud, FiFileText, FiX, FiMic, FiSquare, FiCpu, FiPlayCircle, FiDownload, FiMail } from 'react-icons/fi';
 import api from '@/lib/api';
 import AssistantCard from '@/componentsUser/AssistantCard/AssistantCard';
-import AssistantProcessing from '../../../componentsUser/AgentProcessing/AgentProcessing';
+import AssistantProcessing from '../../../../componentsUser/AgentProcessing/AgentProcessing'; // CORRIGIDO: Caminho correto
 import SoundWaveVisualizer from '@/componentsUser/SoundWaveVisualizer/SoundWaveVisualizer'; 
 import ProcessingAnimation from '@/componentsUser/ProcessingAnimation/ProcessingAnimation'; 
 import Modal from '@/componentsUser/Modal/Modal';
 import emailModalStyles from '@/componentsUser/AssistantHistory/AssistantHistory.module.css';
 
-export default function NewTranscriptionPage() {
+export default function AdminNewTranscriptionPage() {
   const router = useRouter();
   
   const [processState, setProcessState] = useState('idle'); // idle, recording, uploading, transcribing, readyForAssistant, runningAssistant, assistantCompleted
@@ -107,7 +107,7 @@ export default function NewTranscriptionPage() {
     try {
       const uploadResponse = await api.post('/transcriptions/upload', formData, {
         onUploadProgress: (progressEvent) => {
-            const total = progressEvent.total || file.size; // Fallback para o tamanho do arquivo
+            const total = progressEvent.total || file.size;
             setUploadProgress(Math.round((progressEvent.loaded * 100) / total));
         }
       });
@@ -357,7 +357,7 @@ export default function NewTranscriptionPage() {
                 <button onClick={() => setIsEmailModalOpen(true)} className={styles.outputActionButton}>
                     <FiMail /> Enviar por Email
                 </button>
-                <button onClick={() => router.push('/dashboard/conteudo-gerado')} className={styles.outputActionButton}>
+                <button onClick={() => router.push('/admin/conteudo-gerado')} className={styles.outputActionButton}>
                     <FiFileText /> Ver no Histórico
                 </button>
             </div>
@@ -393,7 +393,7 @@ export default function NewTranscriptionPage() {
 
   return (
     <>
-        <div className={styles.page}>{renderContent(false)}</div>
+        <div className={styles.page}>{renderContent(true)}</div>
         {isEmailModalOpen && (
             <Modal 
             isOpen={isEmailModalOpen} 

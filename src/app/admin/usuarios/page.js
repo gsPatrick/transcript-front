@@ -1,5 +1,4 @@
 // src/app/admin/usuarios/page.js
-
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -9,25 +8,17 @@ import ActionMenu from '@/componentsUser/ActionMenu/ActionMenu';
 import UserDetailsModal from '@/componentsAdmin/UserModals/UserDetailsModal';
 import UserEditModal from '@/componentsAdmin/UserModals/UserEditModal';
 import AssignPlanModal from '@/componentsAdmin/UserModals/AssignPlanModal';
+import UserCreateModal from '@/componentsAdmin/UserModals/UserCreateModal'; 
 import { FiSearch, FiUserPlus, FiFilter, FiEye, FiPackage, FiEdit, FiTrash2, FiAlertCircle } from 'react-icons/fi';
 import api from '@/lib/api';
 
-// --- HOOK useDebounce INCLUÍDO DIRETAMENTE NO ARQUIVO ---
-// Em um projeto maior, é recomendado colocá-lo em seu próprio arquivo (ex: src/hooks/useDebounce.js)
+// Hook useDebounce para otimizar a busca
 function useDebounce(value, delay) {
   const [debouncedValue, setDebouncedValue] = useState(value);
   useEffect(() => {
-    // Configura um timer para atualizar o valor debounced após o delay
-    const handler = setTimeout(() => {
-      setDebouncedValue(value);
-    }, delay);
-
-    // Limpa o timer se o valor mudar (evitando atualizações desnecessárias)
-    // ou se o componente for desmontado.
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [value, delay]); // Roda o efeito novamente apenas se o valor ou o delay mudarem
+    const handler = setTimeout(() => { setDebouncedValue(value); }, delay);
+    return () => { clearTimeout(handler); };
+  }, [value, delay]);
   return debouncedValue;
 }
 
@@ -40,74 +31,60 @@ export default function AdminUsersPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Estados para controlar os modais
+  // Estados dos modais
   const [viewingUser, setViewingUser] = useState(null);
   const [editingUser, setEditingUser] = useState(null);
   const [assigningPlanUser, setAssigningPlanUser] = useState(null);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   
-  const debouncedSearchTerm = useDebounce(searchTerm, 500); // Atraso de 500ms para a busca
+  const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
   const fetchUsers = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
       const params = new URLSearchParams({
-        page: pagination.currentPage,
-        limit: 10,
-        searchTerm: debouncedSearchTerm,
-        planName: filterPlan,
+        page: pagination.currentPage, limit: 10,
+        searchTerm: debouncedSearchTerm, planName: filterPlan,
       });
       const response = await api.get(`/admin/users?${params.toString()}`);
       setUsers(response.data.users);
       setPagination({ currentPage: response.data.currentPage, totalPages: response.data.totalPages });
     } catch (err) {
       const msg = err.response?.data?.message || 'Erro ao buscar usuários.';
-      setError(msg);
-      toast.error(msg);
-    } finally {
-      setIsLoading(false);
-    }
+      setError(msg); toast.error(msg);
+    } finally { setIsLoading(false); }
   }, [pagination.currentPage, debouncedSearchTerm, filterPlan]);
 
   useEffect(() => {
-    // Busca os planos para popular o dropdown de filtro
     const fetchPlans = async () => {
       try {
         const response = await api.get('/admin/plans');
         setPlans(response.data);
-      } catch (err) {
-        toast.error('Não foi possível carregar a lista de planos.');
-      }
+      } catch (err) { toast.error('Não foi possível carregar a lista de planos.'); }
     };
     fetchPlans();
   }, []);
 
-  useEffect(() => {
-    fetchUsers();
-  }, [fetchUsers]);
+  useEffect(() => { fetchUsers(); }, [fetchUsers]);
   
   const handleUpdateUser = async (userId, data) => {
     const toastId = toast.loading('Atualizando usuário...');
     try {
       await api.put(`/admin/users/${userId}`, data);
-      toast.success('Usuário atualizado com sucesso!', { id: toastId });
-      setEditingUser(null);
-      fetchUsers(); // Recarrega a lista
-    } catch (err) {
-      toast.error(err.response?.data?.message || 'Erro ao atualizar usuário.', { id: toastId });
-    }
+      toast.success('Usuário atualizado!', { id: toastId });
+      setEditingUser(null); fetchUsers();
+    } catch (err) { toast.error(err.response?.data?.message || 'Erro ao atualizar.', { id: toastId }); }
   };
 
   const handleDeleteUser = async (userId) => {
-    if (window.confirm("Tem certeza que deseja excluir este usuário? Esta ação não pode ser desfeita e pode falhar se o usuário tiver dados associados.")) {
+    if (window.confirm("Tem certeza? Esta ação é irreversível.")) {
       const toastId = toast.loading('Excluindo usuário...');
       try {
         await api.delete(`/admin/users/${userId}`);
-        toast.success('Usuário excluído com sucesso!', { id: toastId });
-        fetchUsers(); // Recarrega a lista
-      } catch (err) {
-        toast.error(err.response?.data?.message || 'Erro ao excluir usuário.', { id: toastId });
-      }
+        toast.success('Usuário excluído!', { id: toastId });
+        fetchUsers();
+      } catch (err) { toast.error(err.response?.data?.message || 'Erro ao excluir.', { id: toastId }); }
     }
   };
 
@@ -115,32 +92,24 @@ export default function AdminUsersPage() {
     const toastId = toast.loading('Atribuindo plano...');
     try {
       await api.post('/admin/users/assign-plan', { userId, planId });
-      toast.success('Plano atribuído com sucesso!', { id: toastId });
-      setAssigningPlanUser(null);
-      fetchUsers(); // Recarrega a lista
-    } catch (err) {
-      toast.error(err.response?.data?.message || 'Erro ao atribuir plano.', { id: toastId });
-    }
+      toast.success('Plano atribuído!', { id: toastId });
+      setAssigningPlanUser(null); fetchUsers();
+    } catch (err) { toast.error(err.response?.data?.message || 'Erro ao atribuir.', { id: toastId }); }
+  };
+
+  const handleCreateUser = async (userData) => {
+    const toastId = toast.loading('Criando usuário...');
+    try {
+      await api.post('/auth/register', userData); 
+      toast.success('Usuário criado com sucesso!', { id: toastId });
+      setIsCreateModalOpen(false); fetchUsers();
+    } catch (err) { toast.error(err.response?.data?.message || 'Erro ao criar usuário.', { id: toastId }); }
   };
   
   const getStatusClass = (user) => (user.planId && new Date(user.planExpiresAt) > new Date() ? styles.active : styles.inactive);
-
-  const getStatusText = (user) => {
-    if (user.planId && new Date(user.planExpiresAt) > new Date()) {
-      return 'Ativo';
-    }
-    return 'Inativo';
-  };
-
-  const handleFilterChange = (e) => {
-    setFilterPlan(e.target.value);
-    setPagination(p => ({ ...p, currentPage: 1 }));
-  };
-
-  const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
-    setPagination(p => ({ ...p, currentPage: 1 }));
-  };
+  const getStatusText = (user) => (user.planId && new Date(user.planExpiresAt) > new Date() ? 'Ativo' : 'Inativo');
+  const handleFilterChange = (e) => { setFilterPlan(e.target.value); setPagination(p => ({ ...p, currentPage: 1 })); };
+  const handleSearchChange = (e) => { setSearchTerm(e.target.value); setPagination(p => ({ ...p, currentPage: 1 })); };
   
   return (
     <div className={styles.page}>
@@ -162,7 +131,7 @@ export default function AdminUsersPage() {
             <option value="Nenhum">Nenhum Plano</option>
           </select>
         </div>
-        <button className={styles.ctaButton} onClick={() => toast.error('Funcionalidade não implementada.')}><FiUserPlus /> Novo Usuário</button>
+        <button className={styles.ctaButton} onClick={() => setIsCreateModalOpen(true)}><FiUserPlus /> Novo Usuário</button>
       </div>
 
       {isLoading && <TableSkeleton />}
@@ -172,9 +141,7 @@ export default function AdminUsersPage() {
           <div className={styles.tableWrapper}>
             <table className={styles.table}>
               <thead>
-                <tr>
-                  <th>Nome</th><th>E-mail</th><th>Plano Atual</th><th>Status</th><th>Data de Cadastro</th><th>Ações</th>
-                </tr>
+                <tr><th>Nome</th><th>E-mail</th><th>Plano Atual</th><th>Status</th><th>Data de Cadastro</th><th>Ações</th></tr>
               </thead>
               <tbody>
                 {users.length > 0 ? users.map(user => (
@@ -193,49 +160,27 @@ export default function AdminUsersPage() {
                       </ActionMenu>
                     </td>
                   </tr>
-                )) : (
-                  <tr>
-                    <td colSpan="6" className={styles.noResults}>Nenhum usuário encontrado.</td>
-                  </tr>
-                )}
+                )) : ( <tr><td colSpan="6" className={styles.noResults}>Nenhum usuário encontrado.</td></tr> )}
               </tbody>
             </table>
           </div>
-          {/* TODO: Adicionar componente de paginação */}
+          {/* TODO: Paginação */}
         </>
       )}
       
       {viewingUser && <UserDetailsModal user={viewingUser} onClose={() => setViewingUser(null)} />}
-      {editingUser && <UserEditModal user={editingUser} plans={plans} onSave={handleUpdateUser} onClose={() => setEditingUser(null)} />}
+      {editingUser && <UserEditModal user={editingUser} onSave={handleUpdateUser} onClose={() => setEditingUser(null)} />}
       {assigningPlanUser && <AssignPlanModal user={assigningPlanUser} plans={plans} onSave={handleAssignPlan} onClose={() => setAssigningPlanUser(null)} />}
+      {isCreateModalOpen && <UserCreateModal onSave={handleCreateUser} onClose={() => setIsCreateModalOpen(false)} />}
     </div>
   );
 }
 
-// --- COMPONENTE SKELETON INCLUÍDO DIRETAMENTE NO ARQUIVO ---
 const TableSkeleton = () => (
     <div className={styles.tableWrapper}>
         <table className={styles.table}>
-            <thead>
-                <tr>
-                    {[...Array(6)].map((_, i) => (
-                        <th key={i} className={styles.tableHeaderCell}>
-                            <div className={`${styles.skeleton} ${styles.skeletonHeader}`}></div>
-                        </th>
-                    ))}
-                </tr>
-            </thead>
-            <tbody>
-                {[...Array(5)].map((_, i) => (
-                    <tr key={i} className={styles.tableRow}>
-                        {[...Array(6)].map((_, j) => (
-                            <td key={j} className={styles.tableBodyCell}>
-                                <div className={`${styles.skeleton} ${styles.skeletonCell}`}></div>
-                            </td>
-                        ))}
-                    </tr>
-                ))}
-            </tbody>
+            <thead><tr>{[...Array(6)].map((_, i) => <th key={i}><div className={`${styles.skeleton} ${styles.skeletonHeader}`}></div></th>)}</tr></thead>
+            <tbody>{[...Array(5)].map((_, i) => <tr key={i}>{[...Array(6)].map((_, j) => <td key={j}><div className={`${styles.skeleton} ${styles.skeletonCell}`}></div></td>)}</tr>)}</tbody>
         </table>
     </div>
 );

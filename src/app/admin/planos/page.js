@@ -18,15 +18,28 @@ export default function AdminPlansPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingPlan, setEditingPlan] = useState(null);
 
+  // <<< CORREÇÃO: Função fetchPlans simplificada para remover Promise.all >>>
   const fetchPlans = async () => {
     setIsLoading(true);
+    setError(null);
     try {
+      // Fazendo uma única chamada de API de forma direta
       const response = await api.get('/admin/plans');
-      setPlans(response.data);
+      
+      // Mantendo a validação importante da correção anterior
+      if (Array.isArray(response.data)) {
+        setPlans(response.data);
+      } else {
+        console.warn("A resposta da API para /admin/plans não era um array:", response.data);
+        setPlans([]); // Garante que o estado seja sempre um array
+        setError("Formato de dados inesperado recebido do servidor.");
+      }
+
     } catch (err) {
       const msg = err.response?.data?.message || 'Erro ao carregar planos.';
       setError(msg);
       toast.error(msg);
+      setPlans([]); // Garante que `plans` seja um array mesmo em caso de erro
     } finally {
       setIsLoading(false);
     }
@@ -79,7 +92,7 @@ export default function AdminPlansPage() {
     }
   };
 
-  const formatLimit = (limit) => (limit === -1 ? 'Ilimitado' : limit);
+  const formatLimit = (limit) => (limit === -1 || limit === null || limit === undefined ? 'Ilimitado' : limit);
 
   return (
     <div className={styles.page}>
@@ -106,39 +119,48 @@ export default function AdminPlansPage() {
               </tr>
             </thead>
             <tbody>
-              {plans.map(plan => (
-                <tr key={plan.id}>
-                  <td className={styles.planName}>{plan.name}</td>
-                  <td>{`R$ ${parseFloat(plan.price).toFixed(2)}`}</td>
-                  <td>{`${plan.durationInDays} dias`}</td>
-                  <td className={styles.limitsCell}>
-                    <span>Transcrições: <strong>{formatLimit(plan.features.maxAudioTranscriptions)}</strong></span>
-                    <span>Minutos: <strong>{formatLimit(plan.features.maxTranscriptionMinutes)}</strong></span>
-                  </td>
-                  <td className={styles.actionsCell}>
-                    <ActionMenu>
-                      <button onClick={() => openEditModal(plan)} className={styles.menuItem}><FiEdit /> Editar</button>
-                      <button onClick={() => handleDeletePlan(plan.id)} className={styles.menuItem}><FiTrash2 /> Excluir</button>
-                    </ActionMenu>
-                  </td>
+              {Array.isArray(plans) && plans.length > 0 ? (
+                plans.map(plan => (
+                  <tr key={plan.id}>
+                    <td className={styles.planName}>{plan.name}</td>
+                    <td>{`R$ ${parseFloat(plan.price).toFixed(2)}`}</td>
+                    <td>{`${plan.durationInDays} dias`}</td>
+                    <td className={styles.limitsCell}>
+                      <span>Transcrições: <strong>{formatLimit(plan.features?.maxAudioTranscriptions)}</strong></span>
+                      <span>Minutos: <strong>{formatLimit(plan.features?.maxTranscriptionMinutes)}</strong></span>
+                      <span>Usos de IA: <strong>{formatLimit(plan.features?.maxAssistantUses)}</strong></span>
+                    </td>
+                    <td className={styles.actionsCell}>
+                      <ActionMenu>
+                        <button onClick={() => openEditModal(plan)} className={styles.menuItem}><FiEdit /> Editar</button>
+                        <button onClick={() => handleDeletePlan(plan.id)} className={`${styles.menuItem} ${styles.deleteMenuItem}`}><FiTrash2 /> Excluir</button>
+                      </ActionMenu>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="5" className={styles.noResults}>Nenhum plano encontrado.</td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>
       )}
 
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title={editingPlan ? `Editar Plano: ${editingPlan.name}` : 'Criar Novo Plano'}
-      >
-        <PlanForm
-          plan={editingPlan}
-          onSave={handleSavePlan}
-          onCancel={() => setIsModalOpen(false)}
-        />
-      </Modal>
+      {isModalOpen && (
+        <Modal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          title={editingPlan ? `Editar Plano: ${editingPlan.name}` : 'Criar Novo Plano'}
+        >
+          <PlanForm
+            plan={editingPlan}
+            onSave={handleSavePlan}
+            onCancel={() => setIsModalOpen(false)}
+          />
+        </Modal>
+      )}
     </div>
   );
 }

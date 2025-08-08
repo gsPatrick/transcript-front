@@ -1,4 +1,4 @@
-/* src/app/dashboard/nova-transcricao/page.module.css */
+/* src/app/admin/transcricoes/nova/page.module.css */
 
 .page {
   width: 100%;
@@ -136,7 +136,14 @@
   border-color: var(--color-accent);
   box-shadow: 0 0 0 4px rgba(12, 102, 212, 0.2);
 }
-
+.outputFormatOptions {
+  display: flex; gap: 1.5rem; justify-content: center;
+  margin: 1rem 0;
+}
+.outputFormatOptions label {
+  display: flex; align-items: center; gap: 0.5rem;
+  font-size: 1rem; font-weight: 500; color: var(--text-dark); cursor: pointer;
+}
 .runAssistantButton {
   background-color: var(--color-accent); color: white;
   border: none; border-radius: 8px; padding: 1rem;
@@ -148,7 +155,6 @@
   background-color: #0a58b8; transform: translateY(-2px);
 }
 
-/* <<< CORREÇÃO DE ESTILO: Estilos para os botões de ação final >>> */
 .outputActionsGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));

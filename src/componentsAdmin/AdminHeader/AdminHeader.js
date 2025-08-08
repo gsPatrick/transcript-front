@@ -8,15 +8,17 @@ import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import styles from './AdminHeader.module.css';
 import { 
-  FiHome, FiUsers, FiPackage, FiCpu, FiSettings, FiDollarSign, FiLogOut, FiMenu, FiX, 
+  FiHome, FiUsers, FiPackage, FiCpu, FiSettings, FiFilePlus, FiLogOut, FiMenu, FiX, 
 } from 'react-icons/fi';
 
 const navItems = [
   { href: '/admin', icon: <FiHome />, label: 'Dashboard' },
   { href: '/admin/usuarios', icon: <FiUsers />, label: 'Usuários' },
   { href: '/admin/planos', icon: <FiPackage />, label: 'Planos' },
-  { href: '/dashboard/assistentes', icon: <FiCpu />, label: 'Meus Assistentes' },
+  { href: '/admin/assistentes', icon: <FiCpu />, label: 'Assistentes' },
   { href: '/admin/configuracoes', icon: <FiSettings />, label: 'Configurações' },
+  // CORRIGIDO: O link para a página de transcrição de ADMIN
+  { href: '/admin/transcricoes/nova', icon: <FiFilePlus />, label: 'Transcrever Áudio' }, 
 ];
 
 export default function AdminHeader() {
@@ -51,7 +53,8 @@ export default function AdminHeader() {
           <Link 
             key={item.href} 
             href={item.href} 
-            className={`${styles.navLink} ${pathname === item.href ? styles.active : ''}`}
+            // Usar .startsWith para que sub-rotas como /admin/assistentes/editar/ID também fiquem ativas
+            className={`${styles.navLink} ${pathname.startsWith(item.href) && item.href !== '/admin' || pathname === item.href ? styles.active : ''}`} 
             onClick={() => setIsMenuOpen(false)}
           >
             {item.icon}

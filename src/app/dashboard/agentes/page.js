@@ -13,8 +13,10 @@ import api from '@/lib/api';
 
 // Subcomponente interno para adicionar os botões de ação ao AgentCard
 const AgentCardWithActions = ({ agent, onEdit, onDelete }) => (
+  // O agentCardWrapper já lida com a borda, sombra e hover para o card + actions
   <div className={styles.agentCardWrapper}>
-    <AssistantCard assistant={agent} /> {/* <<< Usa AssistantCard aqui */}
+    {/* O AssistantCard é apenas o conteúdo visual, sem borda/sombra própria para este caso */}
+    <AssistantCard assistant={agent} /> 
     {!agent.isSystemAgent && (
       <div className={styles.cardActions}>
         <button onClick={() => onEdit(agent)} className={styles.actionButton}><FiEdit /> Editar</button>
@@ -45,6 +47,7 @@ export default function AgentsPage() {
         setAgents(agentsRes.data);
         setPlanUsage(usageRes.data);
       } catch (err) {
+        console.error("Erro ao carregar agentes:", err); // Log para depuração
         const errorMessage = err.response?.data?.message || 'Não foi possível carregar os agentes.';
         setError(errorMessage);
         toast.error(errorMessage);
@@ -74,14 +77,10 @@ export default function AgentsPage() {
   };
 
   const openEditModal = (agent) => {
-    // Ao editar um Agente (legado), precisamos mapear suas propriedades
-    // para as propriedades que o AssistantForm espera.
     setEditingAgent({
       ...agent,
-      instructions: agent.description || agent.promptTemplate, // Mapeia para instructions
-      model: agent.modelUsed, // Mapeia para model
-      // As outras propriedades (executionMode, runConfiguration, knowledgeBase)
-      // terão os valores padrão do AssistantForm e serão ignoradas pelo backend de Agente.
+      instructions: agent.description || agent.promptTemplate, 
+      model: agent.modelUsed, 
     });
     setIsModalOpen(true);
   };
@@ -94,6 +93,7 @@ export default function AgentsPage() {
         setAgents(prev => prev.filter(agent => agent.id !== agentId));
         toast.success('Agente excluído com sucesso!', { id: toastId });
       } catch (err) {
+        console.error("Erro ao excluir agente:", err); // Log para depuração
         const errorMessage = err.response?.data?.message || 'Não foi possível excluir o agente.';
         toast.error(errorMessage, { id: toastId });
       }
@@ -104,21 +104,17 @@ export default function AgentsPage() {
     const isEditing = !!editingAgent;
     const toastId = toast.loading(isEditing ? 'Atualizando agente...' : 'Criando agente...');
     
-    // O backend de Agentes espera `promptTemplate` e `description`, `modelUsed`.
-    // O `AssistantForm` fornece `instructions` e `model`.
     const agentPayload = {
       name: data.name,
-      description: data.instructions, // Mapeia instructions de volta para description
-      promptTemplate: data.instructions, // Mapeia instructions para promptTemplate
+      description: data.instructions, 
+      promptTemplate: data.instructions, 
       outputFormat: data.outputFormat,
-      modelUsed: data.model, // Mapeia model de volta para modelUsed
-      // Propriedades como knowledgeBase e runConfiguration não são suportadas por agentes legados e serão ignoradas pelo backend.
+      modelUsed: data.model, 
     };
     
     try {
       if (isEditing) {
         const response = await api.put(`/agents/my-agents/${editingAgent.id}`, agentPayload);
-        // Atualiza o estado com os dados retornados do backend (que podem não ter runConfig/knowledgeBase)
         setAgents(prev => prev.map(agent => (agent.id === editingAgent.id ? response.data : agent)));
         toast.success('Agente atualizado com sucesso!', { id: toastId });
       } else {
@@ -128,6 +124,7 @@ export default function AgentsPage() {
       }
       setIsModalOpen(false);
     } catch (err) {
+      console.error("Erro ao salvar agente:", err); // Log para depuração
       const errorMessage = err.response?.data?.message || 'Ocorreu um erro.';
       toast.error(errorMessage, { id: toastId });
     }
@@ -153,7 +150,11 @@ export default function AgentsPage() {
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}><FiCpu /> Agentes do Sistema</h2>
         <div className={styles.agentsGrid}>
-          {systemAgents.map(agent => <AssistantCard key={agent.id} assistant={agent} />)} {/* <<< Usa AssistantCard aqui */}
+          {systemAgents.map(agent => (
+            // Para agentes do sistema, o AssistantCard é usado diretamente
+            // e ele não precisa de um wrapper extra, pois não tem ações de edição/exclusão.
+            <AssistantCard key={agent.id} assistant={agent} />
+          ))}
         </div>
       </section>
 
@@ -182,7 +183,6 @@ export default function AgentsPage() {
           assistant={editingAgent} 
           onSave={handleSaveAgent}
           onCancel={() => setIsModalOpen(false)}
-          // isUserAgentForm={true} // <<< Esta prop não é mais necessária no AssistantForm genérico
         />
       </Modal>
     </div>

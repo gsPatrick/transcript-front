@@ -35,7 +35,7 @@
   color: var(--color-accent);
 }
 .user .iconWrapper {
-  background-color: #e8eaf6; /* Um roxo claro para diferenciar */
+  background-color: #e8eaf6;
   color: #3f51b5;
 }
 
@@ -63,3 +63,6 @@
   flex-grow: 1;
   margin-bottom: 1.5rem;
 }
+
+/* REMOVIDO: O seletor inválido */
+/* REMOVIDO: .assistantCard input[type="radio"]:checked + & { ... } */

@@ -2,13 +2,38 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import styles from './page.module.css'; // Renomeie o CSS também
+import styles from './page.module.css';
 import { toast } from 'react-hot-toast';
 import Modal from '@/componentsUser/Modal/Modal';
-import AssistantForm from '@/componentsUser/AssistantForm/AssistantForm'; // <<< Usará o novo formulário
-import AssistantCard from '@/componentsUser/AssistantCard/AssistantCard'; // <<< Usará o novo card
+import AssistantForm from '@/componentsUser/AssistantForm/AssistantForm';
+import AssistantCard from '@/componentsUser/AssistantCard/AssistantCard';
+import ActionMenu from '@/componentsUser/ActionMenu/ActionMenu';
 import { FiPlusCircle, FiCpu, FiUsers, FiEdit, FiTrash2, FiAlertCircle } from 'react-icons/fi';
 import api from '@/lib/api';
+
+const PageSkeleton = () => (
+    <div className={styles.page}>
+        <header className={styles.header}>
+            <div>
+                <div className={`${styles.skeleton} ${styles.skeletonTitle}`}></div>
+                <div className={`${styles.skeleton} ${styles.skeletonSubtitle}`}></div>
+            </div>
+            <div className={`${styles.skeleton} ${styles.skeletonButton}`}></div>
+        </header>
+        <div className={styles.section}>
+            <div className={`${styles.skeleton} ${styles.skeletonSectionTitle}`}></div>
+            <div className={styles.grid}>
+                {[...Array(2)].map((_, i) => <div key={i} className={`${styles.skeleton} ${styles.skeletonCard}`}></div>)}
+            </div>
+        </div>
+        <div className={styles.section}>
+            <div className={`${styles.skeleton} ${styles.skeletonSectionTitle}`}></div>
+            <div className={styles.grid}>
+                {[...Array(2)].map((_, i) => <div key={i} className={`${styles.skeleton} ${styles.skeletonCard}`}></div>)}
+            </div>
+        </div>
+    </div>
+);
 
 export default function MyAssistantsPage() {
   const [systemAssistants, setSystemAssistants] = useState([]);
@@ -20,10 +45,9 @@ export default function MyAssistantsPage() {
   const [editingAssistant, setEditingAssistant] = useState(null);
 
   const fetchData = async () => {
-    setIsLoading(true);
+    // Não seta o loading aqui para evitar piscar a tela ao recarregar
     setError(null);
     try {
-      // O endpoint /assistants/available já retorna ambos os tipos
       const response = await api.get('/assistants/available');
       setSystemAssistants(response.data.filter(a => a.isSystemAssistant));
       setUserAssistants(response.data.filter(a => !a.isSystemAssistant));
@@ -32,7 +56,7 @@ export default function MyAssistantsPage() {
       setError(msg);
       toast.error(msg);
     } finally {
-      setIsLoading(false);
+      setIsLoading(false); // Seta o loading para false apenas no final
     }
   };
 
@@ -51,40 +75,69 @@ export default function MyAssistantsPage() {
   };
 
   const handleDelete = async (assistantId) => {
-    if (window.confirm("Tem certeza que deseja excluir este assistente?")) {
-      const toastId = toast.loading('Excluindo...');
+    if (window.confirm("Tem certeza que deseja excluir este assistente? Esta ação é irreversível e removerá todos os dados associados.")) {
+      const toastId = toast.loading('Excluindo assistente...');
       try {
         await api.delete(`/assistants/my-assistants/${assistantId}`);
+        // Atualiza a lista na UI sem precisar de um novo fetch
         setUserAssistants(prev => prev.filter(a => a.id !== assistantId));
-        toast.success("Assistente excluído.", { id: toastId });
+        toast.success("Assistente excluído com sucesso.", { id: toastId });
       } catch (err) {
-        toast.error(err.response?.data?.message || "Erro ao excluir.", { id: toastId });
+        toast.error(err.response?.data?.message || "Erro ao excluir o assistente.", { id: toastId });
       }
     }
   };
 
-  const handleSave = async (assistantData) => {
+  const handleSave = async (formData) => {
     const isEditing = !!editingAssistant;
-    const toastId = toast.loading(isEditing ? 'Salvando...' : 'Criando...');
+    const toastId = toast.loading(isEditing ? 'Atualizando assistente...' : 'Criando novo assistente...');
 
+    const dataToSend = new FormData();
+
+    // Anexa todos os campos de primeiro nível
+    Object.keys(formData).forEach(key => {
+        if (key !== 'knowledgeBase' && key !== 'runConfiguration') {
+            dataToSend.append(key, formData[key]);
+        }
+    });
+    
+    // Anexa objetos JSON como string
+    dataToSend.append('runConfiguration', JSON.stringify(formData.runConfiguration));
+
+    // Anexa arquivos para upload
+    if (formData.knowledgeBase.files && formData.knowledgeBase.files.length > 0) {
+      formData.knowledgeBase.files.forEach(file => {
+        dataToSend.append('knowledgeFiles', file); // O backend espera um campo chamado 'knowledgeFiles'
+      });
+    }
+
+    // Anexa IDs de arquivos para deleção
+    if (formData.knowledgeBase.fileIdsToDelete && formData.knowledgeBase.fileIdsToDelete.length > 0) {
+      dataToSend.append('filesToRemoveIds', JSON.stringify(formData.knowledgeBase.fileIdsToDelete));
+    }
+    
     try {
+      let response;
+      const config = { headers: { 'Content-Type': 'multipart/form-data' } };
+
       if (isEditing) {
-        const response = await api.put(`/assistants/my-assistants/${editingAssistant.id}`, assistantData);
-        setUserAssistants(userAssistants.map(a => a.id === editingAssistant.id ? response.data.assistant : a));
-        toast.success("Assistente atualizado!", { id: toastId });
+        response = await api.put(`/assistants/my-assistants/${editingAssistant.id}`, dataToSend, config);
+        toast.success("Assistente atualizado com sucesso!", { id: toastId });
       } else {
-        const response = await api.post('/assistants/my-assistants', assistantData);
-        setUserAssistants([...userAssistants, response.data.assistant]);
-        toast.success("Assistente criado!", { id: toastId });
+        response = await api.post('/assistants/my-assistants', dataToSend, config);
+        toast.success("Assistente criado com sucesso!", { id: toastId });
       }
+      
       setIsModalOpen(false);
+      fetchData(); // Recarrega os dados para garantir que a lista esteja 100% atualizada
+
     } catch (err) {
-      toast.error(err.response?.data?.message || "Ocorreu um erro.", { id: toastId });
+      toast.error(err.response?.data?.message || "Ocorreu um erro inesperado.", { id: toastId });
     }
   };
 
   if (isLoading) return <PageSkeleton />;
-  if (error) return <div className={styles.errorContainer}><FiAlertCircle size={32}/> {error}</div>;
+  if (error) return <div className={styles.errorContainer}><FiAlertCircle size={48}/><h2>Erro ao Carregar</h2><p>{error}</p></div>;
 
   return (
     <div className={styles.page}>
@@ -96,26 +149,36 @@ export default function MyAssistantsPage() {
         <button onClick={openCreateModal} className={styles.ctaButton}><FiPlusCircle /> Criar Novo Assistente</button>
       </header>
       
-      <section>
-        <h2 className={styles.sectionTitle}><FiUsers /> Meus Assistentes Personalizados</h2>
+      <section className={styles.section}>
+        <h2 className={styles.sectionTitle}><FiUsers /> Meus Assistentes</h2>
         {userAssistants.length > 0 ? (
           <div className={styles.grid}>
             {userAssistants.map(assistant => (
               <div key={assistant.id} className={styles.cardWrapper}>
-                <AssistantCard assistant={assistant} />
-                <div className={styles.cardActions}>
-                  <button onClick={() => openEditModal(assistant)} className={styles.actionButton}><FiEdit/> Editar</button>
-                  <button onClick={() => handleDelete(assistant.id)} className={`${styles.actionButton} ${styles.deleteButton}`}><FiTrash2/> Excluir</button>
+                <div className={styles.cardMenuTrigger}>
+                  <ActionMenu>
+                    <button onClick={() => openEditModal(assistant)} className={styles.menuItem}>
+                      <FiEdit/> Editar
+                    </button>
+                    <button onClick={() => handleDelete(assistant.id)} className={`${styles.menuItem} ${styles.deleteMenuItem}`}>
+                      <FiTrash2/> Excluir
+                    </button>
+                  </ActionMenu>
                 </div>
+                <AssistantCard assistant={assistant} />
               </div>
             ))}
           </div>
         ) : (
-          <p className={styles.emptyState}>Você ainda não criou nenhum assistente personalizado.</p>
+          <div className={styles.emptyState}>
+            <FiUsers size={48} />
+            <h3>Você ainda não criou assistentes</h3>
+            <p>Clique em "Criar Novo Assistente" para começar a automatizar suas tarefas.</p>
+          </div>
         )}
       </section>
 
-      <section>
+      <section className={styles.section}>
         <h2 className={styles.sectionTitle}><FiCpu /> Assistentes do Sistema</h2>
         {systemAssistants.length > 0 ? (
           <div className={styles.grid}>
@@ -126,7 +189,11 @@ export default function MyAssistantsPage() {
             ))}
           </div>
         ) : (
-          <p className={styles.emptyState}>Nenhum assistente do sistema disponível no momento.</p>
+          <div className={styles.emptyState}>
+            <FiCpu size={48} />
+            <h3>Nenhum assistente do sistema disponível</h3>
+            <p>Assistentes pré-configurados pela plataforma para tarefas comuns aparecerão aqui.</p>
+          </div>
         )}
       </section>
 
@@ -140,21 +207,3 @@ export default function MyAssistantsPage() {
     </div>
   );
 }
-
-const PageSkeleton = () => (
-    <div className={styles.page}>
-        <header className={styles.header}>
-            <div>
-                <div className={`${styles.skeleton} ${styles.skeletonTitle}`}></div>
-                <div className={`${styles.skeleton} ${styles.skeletonSubtitle}`}></div>
-            </div>
-            <div className={`${styles.skeleton} ${styles.skeletonButton}`}></div>
-        </header>
-        <section>
-            <div className={`${styles.skeleton} ${styles.skeletonSectionTitle}`}></div>
-            <div className={styles.grid}>
-                {[...Array(2)].map((_, i) => <div key={i} className={`${styles.skeleton} ${styles.skeletonCard}`}></div>)}
-            </div>
-        </section>
-    </div>
-);

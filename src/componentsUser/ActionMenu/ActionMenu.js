@@ -1,3 +1,5 @@
+// src/componentsUser/ActionMenu/ActionMenu.js
+
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -8,7 +10,6 @@ export default function ActionMenu({ children }) {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef(null);
 
-  // Fecha o menu se clicar fora dele
   useEffect(() => {
     function handleClickOutside(event) {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -22,7 +23,8 @@ export default function ActionMenu({ children }) {
   }, [menuRef]);
 
   return (
-    <div className={styles.actionMenu} ref={menuRef}>
+    // <<< CORREÇÃO: Adiciona a classe 'active' quando o menu está aberto >>>
+    <div className={`${styles.actionMenu} ${isOpen ? styles.active : ''}`} ref={menuRef}>
       <button className={styles.menuButton} onClick={() => setIsOpen(!isOpen)}>
         <FiMoreVertical />
       </button>

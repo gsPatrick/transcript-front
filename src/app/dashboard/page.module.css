@@ -5,106 +5,156 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-.dashboard { animation: fadeInUp 0.5s ease-out; }
+.dashboard {
+  animation: fadeInUp 0.5s ease-out;
+  padding: 1rem; /* Adiciona um padding base para telas menores */
+}
 
+/* --- Cabeçalho --- */
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 3rem;
+  margin-bottom: 2.5rem; /* Aumenta o espaçamento inferior */
   flex-wrap: wrap; 
   gap: 1.5rem;
 }
-.title { font-size: 2rem; font-weight: 600; color: var(--text-dark); }
-.subtitle { color: var(--color-primary); opacity: 0.8; margin-top: 0.25rem; }
+
+.title { 
+  font-size: 2.2rem; /* Aumenta a fonte do título */
+  font-weight: 700; /* Deixa a fonte mais forte */
+  color: var(--text-dark); /* Garante cor escura para o texto */
+}
+
+.subtitle { 
+  font-size: 1.1rem; /* Aumenta a fonte do subtitulo */
+  color: var(--color-primary);
+  opacity: 0.9;
+  margin-top: 0.5rem;
+}
+
 .ctaButton {
-  display: flex; align-items: center; gap: 0.75rem;
+  display: flex; 
+  align-items: center; 
+  gap: 0.75rem;
   background-color: var(--color-accent);
   color: var(--text-light);
-  padding: 0.8rem 1.5rem;
-  border-radius: 8px;
+  padding: 0.9rem 1.8rem; /* Aumenta o padding do botão */
+  border-radius: 10px; /* Bordas mais arredondadas */
   font-weight: 600;
+  font-size: 1rem;
   transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(12, 102, 212, 0.2);
 }
+
 .ctaButton:hover {
   background-color: #0a58b8;
   transform: translateY(-3px);
-  box-shadow: 0 4px 15px rgba(12, 102, 212, 0.3);
+  box-shadow: 0 6px 20px rgba(12, 102, 212, 0.3);
 }
 
+/* --- Grid de Estatísticas --- */
 .statsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 3rem;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Aumenta o tamanho mínimo do card */
+  gap: 2rem; /* Aumenta o espaçamento entre os cards */
+  margin-bottom: 3.5rem; /* Aumenta o espaçamento inferior */
 }
 
+/* --- Seção de Transcrições Recentes --- */
 .sectionTitle {
-  font-size: 1.5rem;
+  font-size: 1.8rem;
   font-weight: 600;
   color: var(--text-dark);
   margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e0e0e0;
 }
 
 .tableWrapper {
   background-color: #fff;
-  border-radius: 12px;
-  padding: 1rem;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  overflow-x: auto;
+  border-radius: 16px; /* Bordas mais arredondadas para o card */
+  padding: 1.5rem; /* Aumenta o padding interno */
+  border: 1px solid #eef2f7;
+  box-shadow: 0 8px 30px rgba(14, 48, 89, 0.06); /* Sombra mais suave */
+  overflow-x: auto; /* Garante a rolagem horizontal em telas pequenas */
 }
 
 .table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 500px;
+  min-width: 600px; /* Largura mínima para forçar rolagem se necessário */
 }
 
 .tableHeaderCell, .tableBodyCell {
-  padding: 1rem;
+  padding: 1.2rem 1rem; /* Aumenta o padding das células */
   text-align: left;
-  border-bottom: 1px solid var(--background-soft);
+  border-bottom: 1px solid #f0f3f7; /* Linha divisória mais suave */
   white-space: nowrap;
+  color: var(--text-dark); /* Garante cor escura para todo o texto da tabela */
 }
 
 .tableHeaderCell {
   color: var(--color-primary);
-  opacity: 0.7;
+  opacity: 0.8;
   font-weight: 600;
   font-size: 0.9rem;
   text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.tableRow:last-child .tableBodyCell {
+/* Remove a borda da última linha para um visual mais limpo */
+.table tr:last-child .tableBodyCell {
   border-bottom: none;
+}
+
+.fileName {
+  font-weight: 500;
+}
+
+.viewLink {
+  color: var(--color-accent);
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.viewLink:hover {
+  background-color: var(--background-soft);
+  text-decoration: none;
 }
 
 .emptyCell {
   text-align: center;
   color: #888;
-  padding: 2rem;
+  padding: 3rem;
+  font-style: italic;
 }
 
+/* --- Tags de Status --- */
 .status {
-  padding: 0.3rem 0.8rem;
+  padding: 0.4rem 1rem;
   border-radius: 20px;
-  font-size: 0.85rem;
-  font-weight: 600;
+  font-size: 0.8rem;
+  font-weight: 700;
   display: inline-block;
   text-transform: capitalize;
+  color: white; /* Cor do texto padrão para todas as tags */
 }
-.concluído, .completed { background-color: rgba(46, 204, 113, 0.2); color: #27ae60; }
-.processando, .processing { background-color: rgba(241, 196, 15, 0.2); color: #f39c12; }
-.falhou, .failed { background-color: rgba(231, 76, 60, 0.2); color: #e74c3c; }
 
-/* --- NOVOS ESTILOS PARA LOADING E ERRO --- */
+.completed { background-color: #2ecc71; }
+.processing { background-color: #f39c12; }
+.failed { background-color: #e74c3c; }
 
+/* --- Estilos de Esqueleto e Erro --- */
 @keyframes shimmer {
   100% { transform: translateX(100%); }
 }
 
 .skeleton {
-  background-color: #e0e0e0;
+  background-color: #e9ecef;
   position: relative;
   overflow: hidden;
   border-radius: 8px;
@@ -116,17 +166,17 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, #e0e0e0, #f0f0f0, #e0e0e0);
+  background: linear-gradient(90deg, #e9ecef, #f6f7f8, #e9ecef);
   transform: translateX(-100%);
   animation: shimmer 1.5s infinite;
 }
 
-.skeletonTitle { width: 300px; height: 32px; margin-bottom: 0.5rem; }
-.skeletonText { width: 400px; height: 20px; }
-.skeletonButton { width: 180px; height: 50px; }
-.skeletonCard { height: 120px; }
-.skeletonSectionTitle { width: 250px; height: 28px; margin-bottom: 1.5rem; }
-.skeletonTable { width: 100%; height: 200px; }
+.skeletonTitle { width: 300px; height: 36px; margin-bottom: 0.75rem; }
+.skeletonSubtitle { width: 400px; height: 22px; }
+.skeletonButton { width: 200px; height: 56px; }
+.skeletonCard { height: 150px; }
+.skeletonSectionTitle { width: 280px; height: 30px; margin-bottom: 1.5rem; }
+.skeletonTable { width: 100%; height: 250px; }
 
 .errorContainer {
   display: flex;
@@ -136,26 +186,37 @@
   text-align: center;
   padding: 4rem 2rem;
   background-color: #fff;
-  border-radius: 12px;
+  border-radius: 16px;
   color: var(--color-primary);
+  margin: 2rem;
 }
 .errorContainer h2 {
-  font-size: 1.5rem;
-  margin: 1rem 0 0.5rem;
+  font-size: 1.8rem;
+  margin: 1.5rem 0 0.5rem;
   color: var(--text-dark);
 }
 
 /* --- Responsividade --- */
 @media (max-width: 768px) {
+  .dashboard {
+    padding: 0; /* Remove padding para o conteúdo ir de ponta a ponta */
+  }
   .header {
     flex-direction: column;
     align-items: flex-start;
-    gap: 1rem;
+    gap: 1.5rem;
+    padding: 1.5rem; /* Adiciona padding ao cabeçalho */
+    margin-bottom: 1.5rem;
   }
   .title { font-size: 1.8rem; }
-  .statsGrid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
-}
-
-@media (max-width: 480px) {
-    .statsGrid { grid-template-columns: 1fr; }
+  .subtitle { font-size: 1rem; }
+  .statsGrid {
+    gap: 1rem;
+    padding: 0 1.5rem; /* Adiciona padding lateral */
+    margin-bottom: 2.5rem;
+  }
+  .sectionTitle {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
 }
