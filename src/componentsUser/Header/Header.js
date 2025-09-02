@@ -7,113 +7,81 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import styles from './Header.module.css';
-import { 
-  FiGrid, 
-  FiFileText, 
-  FiCpu, 
-  FiUser, 
-  FiLogOut,
-  FiBox,
-  FiMenu,
-  FiX
-} from 'react-icons/fi';
+import { FiHome, FiEdit, FiUser, FiLogOut, FiMenu, FiX } from 'react-icons/fi';
 
+// Itens de navegação para a área do usuário
 const navItems = [
-  { href: '/dashboard', icon: <FiGrid />, label: 'Dashboard' },
-  { href: '/dashboard/transcricoes', icon: <FiFileText />, label: 'Minhas Transcrições' },
-  { href: '/dashboard/conteudo-gerado', icon: <FiBox />, label: 'Conteúdo Gerado' },
-{ href: '/dashboard/assistentes', icon: <FiCpu />, label: 'Meus Assistentes' },
+  { href: '/dashboard', icon: <FiHome />, label: 'Início' },
+  { href: '/dashboard/transcrever', icon: <FiEdit />, label: 'Transcrever' },
+  { href: '/dashboard/conta', icon: <FiUser />, label: 'Minha Conta' },
 ];
-
-// Separamos os itens de usuário para tratá-los de forma diferente no mobile
-const userItems = [
-    { href: '/dashboard/perfil', icon: <FiUser />, label: 'Meu Perfil' },
-    { href: '/login', icon: <FiLogOut />, label: 'Sair', className: styles.logoutLinkMobile }
-]
 
 export default function Header() {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  // Efeito para fechar o menu se o tamanho da tela mudar para desktop
+  // Fecha o menu se a rota mudar
   useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth > 1024) {
+    setIsMenuOpen(false);
+  }, [pathname]);
+
+  // Impede o scroll da página quando o menu estiver aberto
+  useEffect(() => {
+    document.body.style.overflow = isMenuOpen ? 'hidden' : 'unset';
+  }, [isMenuOpen]);
+  
+  // Opcional: Fecha o menu ao clicar fora
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (isMenuOpen && !event.target.closest(`.${styles.header}, .${styles.nav}`)) {
         setIsMenuOpen(false);
       }
     };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  // Trava o scroll da página quando o menu mobile está aberto
-  useEffect(() => {
-    if (isMenuOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isMenuOpen]);
 
-
   return (
-    <header className={styles.header}>
-      <div className={styles.logoContainer}>
-        <Link href="/dashboard" onClick={() => setIsMenuOpen(false)}>
-          <Image src="/logo.png" width={150} height={50} alt="Conduta Medx" className={styles.logoIcon} />
-        </Link>
-      </div>
+    <>
+      <header className={styles.header}>
+        <div className={styles.leftContent}>
+          <button className={styles.menuToggle} onClick={() => setIsMenuOpen(!isMenuOpen)}>
+            {isMenuOpen ? <FiX /> : <FiMenu />}
+          </button>
+          <div className={styles.logoContainer}>
+            <Link href="/dashboard">
+              <Image src="/logo.png" width={100} height={50} alt="Conduta Medx" priority />
+              <span className={styles.logoText}>Plataforma</span>
+            </Link>
+          </div>
+        </div>
 
-      {/* Navegação que se transforma em menu mobile */}
+        <div className={styles.rightContent}>
+          <Link href="/login" className={styles.logoutLink}>
+            <FiLogOut />
+            <span className={styles.logoutText}>Sair</span>
+          </Link>
+        </div>
+      </header>
+      
       <nav className={`${styles.nav} ${isMenuOpen ? styles.navOpen : ''}`}>
-        {/* Links principais */}
         {navItems.map(item => (
           <Link 
             key={item.href} 
-            href={item.href} 
-            className={`${styles.navLink} ${pathname.startsWith(item.href) && item.href !== '/dashboard' || pathname === item.href ? styles.active : ''}`}
-            onClick={() => setIsMenuOpen(false)}
+            href={item.href}
+            className={`${styles.navLink} ${pathname.startsWith(item.href) ? styles.active : ''}`}
           >
             {item.icon}
             <span>{item.label}</span>
           </Link>
         ))}
-        {/* Divisor para o menu mobile */}
+        {/* Divisor e link de Sair para consistência no mobile */}
         <div className={styles.mobileDivider}></div>
-        {/* Links de usuário que aparecem APENAS no menu mobile */}
-        {userItems.map(item => (
-           <Link 
-            key={item.href} 
-            href={item.href} 
-            className={`${styles.navLink} ${styles.mobileOnlyLink} ${item.className || ''} ${pathname.startsWith(item.href) ? styles.active : ''}`}
-            onClick={() => setIsMenuOpen(false)}
-          >
-            {item.icon}
-            <span>{item.label}</span>
-          </Link>
-        ))}
+        <Link href="/login" className={`${styles.navLink} ${styles.mobileLogoutLink}`}>
+            <FiLogOut />
+            <span>Sair</span>
+        </Link>
       </nav>
-
-      {/* Ações de usuário para a versão desktop */}
-      <div className={styles.userActionsDesktop}>
-        <Link 
-            href="/dashboard/perfil" 
-            className={`${styles.navLink} ${pathname.startsWith('/dashboard/perfil') ? styles.active : ''}`}
-        >
-          <FiUser />
-          <span className={styles.userActionsLabel}>Meu Perfil</span>
-        </Link>
-        <Link href="/login" className={`${styles.navLink} ${styles.logoutLink}`}>
-          <FiLogOut />
-           <span className={styles.userActionsLabel}>Sair</span>
-        </Link>
-      </div>
-      
-      {/* Botão de controle do menu mobile */}
-      <button className={styles.menuToggle} onClick={() => setIsMenuOpen(!isMenuOpen)}>
-        {isMenuOpen ? <FiX /> : <FiMenu />}
-      </button>
-
-    </header>
+    </>
   );
 }

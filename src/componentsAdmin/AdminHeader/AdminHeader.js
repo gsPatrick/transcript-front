@@ -8,7 +8,7 @@ import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import styles from './AdminHeader.module.css';
 import { 
-  FiHome, FiUsers, FiPackage, FiCpu, FiSettings, FiFilePlus, FiLogOut, FiMenu, FiX, 
+  FiHome, FiUsers, FiBox, FiPackage, FiFileText, FiCpu, FiSettings, FiFilePlus, FiLogOut, FiMenu, FiX, 
 } from 'react-icons/fi';
 
 const navItems = [
@@ -16,81 +16,74 @@ const navItems = [
   { href: '/admin/usuarios', icon: <FiUsers />, label: 'Usuários' },
   { href: '/admin/planos', icon: <FiPackage />, label: 'Planos' },
   { href: '/admin/assistentes', icon: <FiCpu />, label: 'Assistentes' },
-  { href: '/admin/configuracoes', icon: <FiSettings />, label: 'Configurações' },
-  // CORRIGIDO: O link para a página de transcrição de ADMIN
+  { href: '/admin/conteudo-gerado', icon: <FiBox />, label: 'Conteúdo Gerado' },
   { href: '/admin/transcricoes/nova', icon: <FiFilePlus />, label: 'Transcrever Áudio' }, 
+  { href: '/admin/transcricoes', icon: <FiFileText />, label: 'Transcrições' },
+  { href: '/admin/configuracoes', icon: <FiSettings />, label: 'Configurações' },
 ];
 
 export default function AdminHeader() {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  // Fecha o menu se a rota mudar
   useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth > 1024) {
-        setIsMenuOpen(false);
-      }
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+    setIsMenuOpen(false);
+  }, [pathname]);
 
+  // Impede o scroll da página quando o menu estiver aberto
   useEffect(() => {
     document.body.style.overflow = isMenuOpen ? 'hidden' : 'unset';
   }, [isMenuOpen]);
 
-  return (
-    <header className={styles.header}>
-      <div className={styles.logoContainer}>
-        <Link href="/admin" onClick={() => setIsMenuOpen(false)}>
-          <Image src="/logo.png" width={100} height={50} alt="Conduta Medx" />
-          <span className={styles.logoText}>Admin Panel</span>
-        </Link>
-      </div>
+  // Função para fechar o menu ao clicar fora (opcional, mas recomendado)
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (isMenuOpen && !event.target.closest(`.${styles.header}, .${styles.nav}`)) {
+        setIsMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isMenuOpen]);
 
+
+  return (
+    <>
+      <header className={styles.header}>
+        <div className={styles.leftContent}>
+          <button className={styles.menuToggle} onClick={() => setIsMenuOpen(!isMenuOpen)}>
+            {isMenuOpen ? <FiX /> : <FiMenu />}
+          </button>
+          <div className={styles.logoContainer}>
+            <Link href="/admin">
+              <Image src="/logo.png" width={100} height={50} alt="Conduta Medx" priority />
+              <span className={styles.logoText}>Admin Panel</span>
+            </Link>
+          </div>
+        </div>
+
+        <div className={styles.rightContent}>
+          <Link href="/login" className={styles.logoutLink}>
+            <FiLogOut />
+            <span className={styles.logoutText}>Sair</span>
+          </Link>
+        </div>
+      </header>
+      
+      {/* O painel de navegação agora é um elemento separado */}
       <nav className={`${styles.nav} ${isMenuOpen ? styles.navOpen : ''}`}>
         {navItems.map(item => (
           <Link 
             key={item.href} 
-            href={item.href} 
-            // Usar .startsWith para que sub-rotas como /admin/assistentes/editar/ID também fiquem ativas
-            className={`${styles.navLink} ${pathname.startsWith(item.href) && item.href !== '/admin' || pathname === item.href ? styles.active : ''}`} 
-            onClick={() => setIsMenuOpen(false)}
+            href={item.href}
+            className={`${styles.navLink} ${pathname.startsWith(item.href) && item.href !== '/admin' || pathname === item.href ? styles.active : ''}`}
           >
             {item.icon}
             <span>{item.label}</span>
           </Link>
         ))}
-        <div className={styles.mobileDivider}></div>
-        <Link 
-          href="/login" 
-          className={`${styles.navLink} ${styles.mobileOnlyLink} ${styles.logoutLinkMobile}`}
-          onClick={() => {
-            setIsMenuOpen(false);
-            if (typeof window !== 'undefined') localStorage.removeItem('authToken');
-          }}
-        >
-          <FiLogOut />
-          <span>Sair</span>
-        </Link>
       </nav>
-
-      <div className={styles.userActionsDesktop}>
-        <Link 
-          href="/login" 
-          className={`${styles.navLink} ${styles.logoutLink}`}
-          onClick={() => {
-            if (typeof window !== 'undefined') localStorage.removeItem('authToken');
-          }}
-        >
-          <FiLogOut />
-          <span className={styles.userActionsLabel}>Sair</span>
-        </Link>
-      </div>
-      
-      <button className={styles.menuToggle} onClick={() => setIsMenuOpen(!isMenuOpen)}>
-        {isMenuOpen ? <FiX /> : <FiMenu />}
-      </button>
-    </header>
+    </>
   );
 }

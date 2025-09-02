@@ -19,7 +19,8 @@ import {
   FiCalendar,
   FiEye,
   FiMail,
-  FiX
+  FiX,
+  FiTrash2
 } from 'react-icons/fi';
 import api from '@/lib/api';
 import Modal from '@/componentsUser/Modal/Modal';
@@ -76,6 +77,10 @@ export default function TranscriptionDetailPage({ params }) {
   const [selectedHistoryItemForEmail, setSelectedHistoryItemForEmail] = useState(null);
   const [emailRecipient, setEmailRecipient] = useState('');
   const [emailFormat, setEmailFormat] = useState('pdf');
+  
+  // Estados para edição do título
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [newTitle, setNewTitle] = useState('');
 
   const fetchData = async (forceReloadHistoryOnly = false) => {
     if (!transcriptionId) return;
@@ -106,6 +111,7 @@ export default function TranscriptionDetailPage({ params }) {
             setTranscription(localTranscription);
             setEditedText(localTranscription.transcriptionText);
             setAvailableAssistants(assistantsRes.data);
+            setNewTitle(localTranscription.title); // Inicializa o novo título com o título atual
         }
         
         const detailedHistoryPromises = historyRes.data.history.map(item => 
@@ -116,7 +122,7 @@ export default function TranscriptionDetailPage({ params }) {
         const formattedHistory = detailedHistoryResponses.map(res => ({
           ...res.data,
           assistantName: res.data.assistant ? res.data.assistant.name : 'Assistente Desconhecido',
-          transcriptionName: localTranscription.originalFileName,
+          transcriptionName: localTranscription.title, // Usa o título editável
         }));
 
         setAssistantHistory(formattedHistory);
@@ -248,6 +254,38 @@ export default function TranscriptionDetailPage({ params }) {
       toast.error(err.response?.data?.message || 'Não foi possível enviar o email.', { id: toastId });
     }
   };
+  
+  const handleTitleSave = async () => {
+    if (newTitle.trim() === '' || newTitle === transcription.title) {
+        setIsEditingTitle(false);
+        setNewTitle(transcription.title); // Garante que o estado reflita o valor real
+        return;
+    }
+    const toastId = toast.loading('Salvando novo nome...');
+    try {
+        const response = await api.put(`/transcriptions/my-transcriptions/${transcriptionId}`, { title: newTitle });
+        setTranscription(prev => ({ ...prev, title: response.data.title }));
+        toast.success('Nome atualizado!', { id: toastId });
+    } catch (err) {
+        toast.error('Não foi possível salvar.', { id: toastId });
+        setNewTitle(transcription.title); // Reverte em caso de erro
+    } finally {
+        setIsEditingTitle(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (window.confirm(`Tem certeza que deseja excluir "${transcription.title}"? Todos os conteúdos de IA gerados a partir dela também serão perdidos.`)) {
+        const toastId = toast.loading('Excluindo transcrição...');
+        try {
+            await api.delete(`/transcriptions/my-transcriptions/${transcriptionId}`);
+            toast.success('Excluído com sucesso!', { id: toastId });
+            router.push('/dashboard/transcricoes');
+        } catch (err) {
+            toast.error('Falha ao excluir.', { id: toastId });
+        }
+    }
+  };
 
   if (isLoading) return <DetailPageSkeleton />;
   if (error) return <div className={styles.errorContainer}><FiAlertCircle size={48}/><h2>Erro ao Carregar</h2><p>{error}</p></div>;
@@ -266,9 +304,27 @@ export default function TranscriptionDetailPage({ params }) {
             <FiArrowLeft />
           </button>
           <div className={styles.titleWrapper}>
-            <h1 className={styles.title}>Visualizando Transcrição</h1>
+            {isEditingTitle ? (
+                <div className={styles.titleEditor}>
+                    <input 
+                      type="text" 
+                      value={newTitle} 
+                      onChange={(e) => setNewTitle(e.target.value)} 
+                      autoFocus 
+                      onBlur={handleTitleSave} 
+                      onKeyDown={(e) => e.key === 'Enter' && handleTitleSave()} 
+                    />
+                    <button onClick={handleTitleSave} title="Salvar"><FiSave/></button>
+                    <button onClick={() => { setIsEditingTitle(false); setNewTitle(transcription.title); }} title="Cancelar"><FiX/></button>
+                </div>
+            ) : (
+                <h1 className={styles.title} onClick={() => setIsEditingTitle(true)} title="Clique para editar">
+                    {transcription.title} <FiEdit className={styles.editIcon}/>
+                </h1>
+            )}
             <p className={styles.subtitle}>{transcription.originalFileName}</p>
           </div>
+          <button onClick={handleDelete} className={styles.deleteHeaderButton}><FiTrash2/> Excluir</button>
         </header>
 
         <div className={styles.layoutGrid}>
@@ -282,7 +338,7 @@ export default function TranscriptionDetailPage({ params }) {
                         ) : (
                             <button className={styles.actionButton} onClick={() => setIsEditing(true)}><FiEdit /> Editar</button>
                         )}
-                        <button className={styles.actionButton} onClick={() => downloadTxtFile(transcription.originalFileName, editedText)}>
+                        <button className={styles.actionButton} onClick={() => downloadTxtFile(transcription.title, editedText)}>
                             <FiDownload/> Baixar .txt
                         </button>
                       </div>

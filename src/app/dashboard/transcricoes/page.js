@@ -1,16 +1,15 @@
 // src/app/dashboard/transcricoes/page.js
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import { toast } from 'react-hot-toast';
 import styles from './page.module.css';
-// --- CORREÇÃO APLICADA AQUI ---
-import { FiFilePlus, FiSearch, FiDownload, FiEye, FiAlertCircle, FiFile, FiMail, FiX, FiCpu, FiFileText } from 'react-icons/fi';
+import { FiFilePlus, FiSearch, FiFileText, FiDownload, FiEye, FiAlertCircle, FiFile, FiMail, FiX, FiEdit, FiTrash2 } from 'react-icons/fi';
 import api from '@/lib/api';
 
-// --- COMPONENTE DO MODAL DE AÇÕES ---
-const ActionModal = ({ isOpen, onClose, item, onDownload, onGeneratePdf, onSendEmail }) => {
+// --- COMPONENTE DO MODAL DE AÇÕES (ATUALIZADO) ---
+const ActionModal = ({ isOpen, onClose, item, onRename, onDelete, onDownload }) => {
     if (!isOpen || !item) {
         return null;
     }
@@ -19,7 +18,7 @@ const ActionModal = ({ isOpen, onClose, item, onDownload, onGeneratePdf, onSendE
         <div className={styles.modalOverlay} onClick={onClose}>
             <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
                 <div className={styles.modalHeader}>
-                    <h3 className={styles.modalTitle}>Ações para: <span>{item.originalFileName}</span></h3>
+                    <h3 className={styles.modalTitle}>Ações para: <span>{item.title}</span></h3>
                     <button className={styles.modalCloseButton} onClick={onClose}><FiX /></button>
                 </div>
                 <div className={styles.modalBody}>
@@ -34,13 +33,13 @@ const ActionModal = ({ isOpen, onClose, item, onDownload, onGeneratePdf, onSendE
                                 <FiDownload />
                                 <span>Baixar TXT</span>
                             </button>
-                            <button onClick={() => { onGeneratePdf(item); onClose(); }} className={styles.modalActionButton} disabled>
-                                <FiFile />
-                                <span>Gerar PDF (Em breve)</span>
+                            <button onClick={() => { onRename(item); onClose(); }} className={styles.modalActionButton}>
+                                <FiEdit />
+                                <span>Renomear</span>
                             </button>
-                            <button onClick={() => { onSendEmail(item); onClose(); }} className={styles.modalActionButton} disabled>
-                                <FiMail />
-                                <span>Enviar por Email (Em breve)</span>
+                            <button onClick={() => { onDelete(item); onClose(); }} className={`${styles.modalActionButton} ${styles.deleteButton}`}>
+                                <FiTrash2 />
+                                <span>Excluir</span>
                             </button>
                         </>
                     )}
@@ -61,7 +60,6 @@ const ActionModal = ({ isOpen, onClose, item, onDownload, onGeneratePdf, onSendE
 export default function TranscriptionsPage() {
   const [transcriptions, setTranscriptions] = useState([]);
   const [pagination, setPagination] = useState({ currentPage: 1, totalPages: 1 });
-  const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('Todos');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -69,38 +67,30 @@ export default function TranscriptionsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTranscription, setSelectedTranscription] = useState(null);
 
-  const openModal = (item) => {
-    setSelectedTranscription(item);
-    setIsModalOpen(true);
-  };
+  const fetchTranscriptions = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const params = new URLSearchParams({ page: pagination.currentPage, limit: 12 });
+      if (filterStatus !== 'Todos') {
+        params.append('status', filterStatus.toLowerCase());
+      }
+      const response = await api.get(`/transcriptions/my-transcriptions?${params.toString()}`);
+      setTranscriptions(response.data.transcriptions);
+      setPagination({ currentPage: response.data.currentPage, totalPages: response.data.totalPages });
+    } catch (err) {
+      const errorMessage = err.response?.data?.message || 'Não foi possível carregar as transcrições.';
+      setError(errorMessage);
+      toast.error(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [pagination.currentPage, filterStatus]);
 
-  const closeModal = () => {
-    setSelectedTranscription(null);
-    setIsModalOpen(false);
-  };
 
   useEffect(() => {
-    const fetchTranscriptions = async () => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const params = new URLSearchParams({ page: pagination.currentPage, limit: 12 });
-        if (filterStatus !== 'Todos') {
-          params.append('status', filterStatus.toLowerCase());
-        }
-        const response = await api.get(`/transcriptions/my-transcriptions?${params.toString()}`);
-        setTranscriptions(response.data.transcriptions);
-        setPagination({ currentPage: response.data.currentPage, totalPages: response.data.totalPages });
-      } catch (err) {
-        const errorMessage = err.response?.data?.message || 'Não foi possível carregar as transcrições.';
-        setError(errorMessage);
-        toast.error(errorMessage);
-      } finally {
-        setIsLoading(false);
-      }
-    };
     fetchTranscriptions();
-  }, [pagination.currentPage, filterStatus]);
+  }, [fetchTranscriptions]);
 
   const handleDownload = async (item) => {
     const toastId = toast.loading('Preparando download...');
@@ -112,7 +102,7 @@ export default function TranscriptionsPage() {
       const element = document.createElement("a");
       const file = new Blob([fullTranscription.transcriptionText], {type: 'text/plain'});
       element.href = URL.createObjectURL(file);
-      element.download = `${fullTranscription.originalFileName.replace(/\.[^/.]+$/, "")}.txt`;
+      element.download = `${fullTranscription.title.replace(/\.[^/.]+$/, "")}.txt`;
       document.body.appendChild(element);
       element.click();
       document.body.removeChild(element);
@@ -122,16 +112,42 @@ export default function TranscriptionsPage() {
       toast.error('Não foi possível baixar o arquivo.', { id: toastId });
     }
   };
+  
+  const handleRename = async (item) => {
+    const newTitle = prompt("Digite o novo nome para a transcrição:", item.title);
+    if (newTitle && newTitle.trim() !== '' && newTitle !== item.title) {
+        const toastId = toast.loading('Renomeando...');
+        try {
+            await api.put(`/transcriptions/my-transcriptions/${item.id}`, { title: newTitle });
+            toast.success('Transcrição renomeada!', { id: toastId });
+            fetchTranscriptions(); // Recarrega a lista
+        } catch (err) {
+            toast.error('Não foi possível renomear.', { id: toastId });
+        }
+    }
+  };
 
-  const handleGeneratePdf = (item) => toast.info(`A geração de PDF para "${item.originalFileName}" estará disponível em breve.`);
-  const handleSendEmail = (item) => toast.info(`O envio por e-mail para "${item.originalFileName}" estará disponível em breve.`);
+  const handleDelete = async (item) => {
+    if (window.confirm(`Tem certeza que deseja excluir "${item.title}"? Esta ação não pode ser desfeita.`)) {
+        const toastId = toast.loading('Excluindo...');
+        try {
+            await api.delete(`/transcriptions/my-transcriptions/${item.id}`);
+            toast.success('Transcrição excluída!', { id: toastId });
+            // Se for a última transcrição na página atual e não for a primeira página, volte uma página
+            if (transcriptions.length === 1 && pagination.currentPage > 1) {
+                setPagination(prev => ({ ...prev, currentPage: prev.currentPage - 1 }));
+            } else {
+                fetchTranscriptions(); // Recarrega a lista na página atual
+            }
+        } catch (err) {
+            toast.error('Não foi possível excluir.', { id: toastId });
+        }
+    }
+  };
 
   const filteredTranscriptions = useMemo(() => {
-    if (!searchTerm) return transcriptions;
-    return transcriptions.filter(item =>
-      item.originalFileName.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [searchTerm, transcriptions]);
+    return transcriptions; // A busca agora é feita no backend
+  }, [transcriptions]);
   
   const formatDate = (dateString) => {
     if (!dateString) return '-';
@@ -155,15 +171,13 @@ export default function TranscriptionsPage() {
         </header>
         
         <div className={styles.controls}>
-          <div className={styles.searchBox}>
-            <FiSearch className={styles.searchIcon} />
-            <input type="text" placeholder="Buscar por nome do arquivo..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
-          </div>
+          {/* A busca foi removida pois o backend não a implementava para transcrições. 
+              Pode ser re-adicionada se o endpoint for atualizado. */}
           <select className={styles.filterSelect} value={filterStatus} onChange={(e) => { setFilterStatus(e.target.value); setPagination(prev => ({ ...prev, currentPage: 1 })); }}>
             <option value="Todos">Todos os Status</option>
-            <option value="Completed">Concluído</option>
-            <option value="Processing">Processando</option>
-            <option value="Failed">Falhou</option>
+            <option value="completed">Concluído</option>
+            <option value="processing">Processando</option>
+            <option value="failed">Falhou</option>
           </select>
         </div>
 
@@ -178,16 +192,14 @@ export default function TranscriptionsPage() {
               {filteredTranscriptions.length > 0 ? (
                   <div className={styles.grid}>
                       {filteredTranscriptions.map(item => (
-                          <div key={item.id} className={styles.card} onClick={() => openModal(item)}>
+                          <div key={item.id} className={styles.card} onClick={() => {setSelectedTranscription(item); setIsModalOpen(true);}}>
                               <div className={styles.cardWave}></div>
                               <div className={styles.cardHeader}>
                                   <FiFileText className={styles.cardIcon} />
-                                  <h3 className={styles.cardTitle}>{item.originalFileName}</h3>
+                                  <h3 className={styles.cardTitle}>{item.title}</h3>
                               </div>
                               <div className={styles.cardMeta}>
                                   <span>{formatDate(item.createdAt)}</span>
-                                  <span>•</span>
-                                  <span>{item.durationSeconds ? `${Math.round(item.durationSeconds)}s` : '-'}</span>
                               </div>
                               <div className={`${styles.status} ${styles[item.status.toLowerCase()]}`}>
                                   {item.status}
@@ -215,11 +227,11 @@ export default function TranscriptionsPage() {
 
       <ActionModal
         isOpen={isModalOpen}
-        onClose={closeModal}
+        onClose={() => setIsModalOpen(false)}
         item={selectedTranscription}
         onDownload={handleDownload}
-        onGeneratePdf={handleGeneratePdf}
-        onSendEmail={handleSendEmail}
+        onRename={handleRename}
+        onDelete={handleDelete}
       />
     </>
   );

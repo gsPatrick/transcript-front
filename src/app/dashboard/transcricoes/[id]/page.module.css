@@ -33,8 +33,66 @@
   background-color: #eef2f7; 
 }
 .titleWrapper { flex-grow: 1; }
-.title { font-size: 1.8rem; font-weight: 600; color: var(--text-dark); }
 .subtitle { color: var(--color-primary); opacity: 0.8; margin-top: 0.25rem; font-family: var(--font-roboto-mono); }
+
+/* --- Título Editável --- */
+.title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.editIcon {
+  font-size: 1.2rem;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  color: var(--color-accent);
+}
+.title:hover .editIcon {
+  opacity: 0.7;
+}
+.titleEditor {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.titleEditor input {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  border: none;
+  border-bottom: 2px solid var(--color-accent);
+  background: #f8f9fa;
+  padding: 0.2rem;
+}
+.titleEditor input:focus {
+  outline: none;
+}
+.titleEditor button {
+  background: none; border: none; font-size: 1.5rem; cursor: pointer;
+  color: var(--color-primary);
+}
+
+/* --- Botão de Excluir no Header --- */
+.deleteHeaderButton {
+  display: flex; align-items: center; gap: 0.5rem;
+  background-color: #ffebee;
+  color: #c62828;
+  border: 1px solid #ffcdd2;
+  border-radius: 8px;
+  padding: 0.7rem 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-left: auto; /* Empurra para a direita */
+}
+.deleteHeaderButton:hover {
+  background-color: #ffcdd2;
+}
+
 
 /* --- Layout Principal de 2 Colunas --- */
 .layoutGrid {
@@ -151,16 +209,66 @@
 /* --- Outros --- */
 .modalTextContent { background-color: #f8f9fa; padding: 1rem; border-radius: 8px; max-height: 60vh; overflow-y: auto; white-space: pre-wrap; word-wrap: break-word; font-family: var(--font-roboto-mono); color: var(--text-dark); }
 .processingOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(14, 48, 89, 0.8); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; z-index: 2000; }
+.errorContainer { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; text-align: center; padding: 4rem; background-color: #fff; border-radius: 12px; }
+.errorContainer h2 { color: var(--text-dark); }
+.errorContainer p { color: var(--color-primary); }
 
 /* --- Esqueletos --- */
-.skeleton { background-color: #e9ecef; position: relative; overflow: hidden; border-radius: 8px; animation: shimmer 1.5s infinite; }
-@keyframes shimmer { 100% { transform: translateX(100%); } }
-.skeleton::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(90deg, #e9ecef, #f6f7f8, #e9ecef); transform: translateX(-100%); animation: shimmer 1.5s infinite; }
+.skeleton { background-color: #e9ecef; position: relative; overflow: hidden; border-radius: 8px; }
+@keyframes shimmer { from { transform: translateX(-100%); } to { transform: translateX(100%); } }
+.skeleton::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(90deg, #e9ecef, #f6f7f8, #e9ecef); animation: shimmer 1.5s infinite; }
 .skeletonBackButton { width: 44px; height: 44px; border-radius: 50%; }
 .skeletonTitle { width: 300px; height: 28px; }
 .skeletonSubtitle { width: 400px; height: 20px; margin-top: 0.5rem; }
 .skeletonMainContent { height: 70vh; }
 .skeletonSidebarCard { height: 150px; }
+
+/* --- Estilos do Modal de Email --- */
+.emailModalContent {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.formGroup label {
+  font-weight: 500;
+  color: var(--text-dark);
+}
+.formGroup input[type="email"] {
+  padding: 0.8rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+.radioGroup {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 0.5rem;
+}
+.radioGroup label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-weight: normal;
+}
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  border-top: 1px solid #eee;
+  padding-top: 1.5rem;
+}
+.cancelButton {
+  padding: 0.8rem 1.5rem; border-radius: 8px; font-weight: 600; 
+  border: none; cursor: pointer; background-color: #eee; color: #555;
+}
+
 
 /* --- Responsividade --- */
 @media (max-width: 1024px) {
@@ -170,4 +278,6 @@
 @media (max-width: 768px) {
   .header { flex-direction: column; align-items: flex-start; }
   .title { font-size: 1.5rem; }
+  .titleEditor input { font-size: 1.5rem; }
+  .deleteHeaderButton { margin-left: 0; margin-top: 1rem; }
 }
