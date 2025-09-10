@@ -54,12 +54,6 @@ export default function Footer() {
           <p className={styles.copyright}>
             © {currentYear} TranscriMedX. Todos os direitos reservados.
           </p>
-          <p className={styles.developerCredit}>
-            Desenvolvido por{' '}
-            <Link href="https://codebypatrick.dev" target="_blank" rel="noopener noreferrer">
-              Patrick.Developer
-            </Link>
-          </p>
         </div>
       </div>
     </footer>
