@@ -1,46 +1,14 @@
 // src/app/dashboard/conteudo-gerado/page.js
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
-import { toast } from 'react-hot-toast';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import Link from 'next/link';
+import { toast } from 'react-hot-toast';
 import styles from './page.module.css';
-import { FiSearch, FiAlertCircle, FiCpu, FiFileText, FiMail, FiX } from 'react-icons/fi';
+import { FiSearch, FiAlertCircle, FiCpu, FiFileText, FiMail, FiX, FiDownload, FiEye } from 'react-icons/fi';
 import api from '@/lib/api';
 import Modal from '@/componentsUser/Modal/Modal';
-import emailModalStyles from '@/componentsUser/AssistantHistory/AssistantHistory.module.css';
-
-// Componente de Ações refatorado
-const ActionModal = ({ isOpen, onClose, item, onAction }) => {
-  if (!isOpen || !item) return null;
-
-  return (
-    <div className={styles.modalOverlay} onClick={onClose}>
-      <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-        <div className={styles.modalHeader}>
-          <h3 className={styles.modalTitle}>Ações para: <span>{item.transcriptionName}</span></h3>
-          <button className={styles.modalCloseButton} onClick={onClose}><FiX /></button>
-        </div>
-        <div className={styles.modalBody}>
-          <button onClick={() => { onAction('download_txt'); onClose(); }} className={styles.modalActionButton}>
-            <FiFileText /> <span>Baixar TXT</span>
-          </button>
-          <button onClick={() => { onAction('download_pdf'); onClose(); }} className={styles.modalActionButton}>
-            <FiFileText /> <span>Baixar PDF</span>
-          </button>
-          <button onClick={() => { onAction('email'); onClose(); }} className={styles.modalActionButton}>
-            <FiMail /> <span>Enviar por Email</span>
-          </button>
-          {item.transcriptionId && (
-            <Link href={`/dashboard/transcricoes/${item.transcriptionId}`} className={`${styles.modalActionButton} ${styles.secondaryAction}`}>
-              <FiCpu /> <span>Ver Transcrição Original</span>
-            </Link>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-};
+import emailModalStyles from '@/componentsUser/AssistantHistory/AssistantHistory.module.css'; // Reutilizando CSS do modal
 
 export default function GeneratedContentPage() {
   const [history, setHistory] = useState([]);
@@ -49,112 +17,94 @@ export default function GeneratedContentPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const [isActionModalOpen, setIsActionModalOpen] = useState(false);
   const [selectedItemForAction, setSelectedItemForAction] = useState(null);
-
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
   const [emailRecipient, setEmailRecipient] = useState('');
   const [emailFormat, setEmailFormat] = useState('pdf');
 
-  useEffect(() => {
-    const fetchHistory = async () => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const params = new URLSearchParams({ page: pagination.currentPage, limit: 9 });
-        const response = await api.get(`/assistants/my-history?${params.toString()}`);
-        
-        const formattedHistory = response.data.history.map(item => ({
-          id: item.id,
-          assistantName: item.assistant ? item.assistant.name : 'Assistente Desconhecido',
-          transcriptionName: item.transcription ? item.transcription.originalFileName : 'Transcrição Desconhecida',
-          transcriptionId: item.transcription ? item.transcription.id : null,
-          format: item.assistant.outputFormat || 'TEXT',
-          date: item.createdAt,
-          status: item.status,
-        }));
-        
-        setHistory(formattedHistory);
-        setPagination({ currentPage: response.data.currentPage, totalPages: response.data.totalPages });
-      } catch (err) {
-        const errorMessage = err.response?.data?.message || 'Não foi possível carregar o histórico.';
-        setError(errorMessage);
-        toast.error(errorMessage);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchHistory();
+  const fetchHistory = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const params = new URLSearchParams({ page: pagination.currentPage, limit: 9 });
+      // Se a busca no backend estiver implementada, adicione o searchTerm aqui
+      // params.append('searchTerm', searchTerm);
+      const response = await api.get(`/assistants/my-history?${params.toString()}`);
+      
+      const formattedHistory = response.data.history.map(item => ({
+        id: item.id,
+        assistantName: item.assistant?.name || 'Assistente Desconhecido',
+        transcriptionName: item.transcription?.originalFileName || 'Transcrição Desconhecida',
+        transcriptionId: item.transcription?.id || null,
+        format: item.outputFormat || 'text',
+        date: item.createdAt,
+        status: item.status,
+      }));
+      
+      setHistory(formattedHistory);
+      setPagination({ currentPage: response.data.currentPage, totalPages: response.data.totalPages });
+    } catch (err) {
+      const errorMessage = err.response?.data?.message || 'Não foi possível carregar o histórico.';
+      setError(errorMessage);
+      toast.error(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
   }, [pagination.currentPage]);
 
-  const openActionModal = (item) => {
+  useEffect(() => {
+    fetchHistory();
+  }, [fetchHistory]);
+
+  const openEmailModal = (item) => {
     setSelectedItemForAction(item);
-    setIsActionModalOpen(true);
+    setIsEmailModalOpen(true);
   };
+  
+  const handleAction = async (item, action) => {
+    if (!item || !action) return;
 
-  const handleHistoryAction = async (action) => {
-    if (!selectedItemForAction) return;
+    const isDownload = action.startsWith('download');
+    const toastMessage = isDownload ? 'Iniciando download...' : 'Enviando email...';
+    const toastId = toast.loading(toastMessage);
 
-    if (action === 'email') {
-      setIsEmailModalOpen(true);
-      return;
-    }
-
-    const toastId = toast.loading(`Processando: ${action.replace('_', ' ')}...`);
     try {
-      const response = await api.post(
-        `/history/${selectedItemForAction.id}/actions`,
-        { action },
-        { responseType: 'blob' }
-      );
+        const response = await api.post(
+            `/history/${item.id}/actions`,
+            { action },
+            // Configuração crucial para downloads
+            { responseType: isDownload ? 'blob' : 'json' }
+        );
 
-      const disposition = response.headers['content-disposition'];
-      const filename = disposition?.split('filename=')[1]?.replaceAll('"', '') || `${selectedItemForAction.transcriptionName}.${action.split('_')[1]}`;
-      
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', filename);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-      
-      toast.success('Download iniciado!', { id: toastId });
+        if (isDownload) {
+            const disposition = response.headers['content-disposition'];
+            const filename = disposition?.split('filename=')[1]?.replaceAll('"', '') || `${item.transcriptionName.replace(/\.[^/.]+$/, "")}.${action.split('_')[1]}`;
+            
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', filename);
+            document.body.appendChild(link);
+            link.click();
+            link.parentNode.removeChild(link);
+            window.URL.revokeObjectURL(url);
+            toast.success('Download iniciado!', { id: toastId });
+        } else {
+            // Se for email, a resposta será um JSON com uma mensagem de sucesso
+            toast.success(response.data.message || 'Email enviado com sucesso!', { id: toastId });
+        }
     } catch (err) {
-      toast.error('Não foi possível processar a sua solicitação.', { id: toastId });
-      console.error("Erro na ação do histórico:", err);
-    }
-  };
-
-  const handleSendEmail = async () => {
-    if (!selectedItemForAction || !emailRecipient) {
-      toast.error("Destinatário ou item inválido.");
-      return;
-    }
-
-    const action = emailFormat === 'pdf' ? 'email_pdf' : 'email_txt';
-    const toastId = toast.loading(`Enviando e-mail com ${emailFormat.toUpperCase()}...`);
-    
-    try {
-      await api.post(`/history/${selectedItemForAction.id}/actions`, {
-        action,
-        recipientEmail: emailRecipient,
-      });
-      
-      toast.success('Email enviado com sucesso!', { id: toastId });
-      setIsEmailModalOpen(false);
-      setSelectedItemForAction(null);
-    } catch (err) {
-      toast.error(err.response?.data?.message || 'Não foi possível enviar o e-mail.', { id: toastId });
+        const errorMessage = err.response?.data?.message || `Não foi possível ${isDownload ? 'baixar o arquivo' : 'enviar o email'}.`;
+        toast.error(errorMessage, { id: toastId });
+        console.error(`Erro na ação '${action}':`, err);
     }
   };
 
   const filteredHistory = useMemo(() => {
     if (!searchTerm) return history;
     return history.filter(item =>
-      (item.assistantName && item.assistantName.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (item.transcriptionName && item.transcriptionName.toLowerCase().includes(searchTerm.toLowerCase()))
+      (item.assistantName?.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (item.transcriptionName?.toLowerCase().includes(searchTerm.toLowerCase()))
     );
   }, [searchTerm, history]);
 
@@ -193,7 +143,7 @@ export default function GeneratedContentPage() {
             {filteredHistory.length > 0 ? (
               <div className={styles.grid}>
                   {filteredHistory.map(item => (
-                      <div key={item.id} className={`${styles.card} ${item.status !== 'completed' ? styles.disabledCard : ''}`} onClick={() => item.status === 'completed' && openActionModal(item)}>
+                      <div key={item.id} className={`${styles.card} ${item.status !== 'completed' ? styles.disabledCard : ''}`}>
                           <div className={styles.cardHeader}>
                               <FiCpu className={styles.cardIcon} />
                               <h3 className={styles.cardTitle}>{item.assistantName}</h3>
@@ -209,6 +159,15 @@ export default function GeneratedContentPage() {
                               </div>
                               <span className={`${styles.statusTag} ${styles[item.status]}`}>{item.status}</span>
                           </div>
+
+                          {item.status === 'completed' && (
+                            <div className={styles.cardActions}>
+                                <button onClick={() => handleAction(item, 'download_txt')}><FiDownload/> TXT</button>
+                                <button onClick={() => handleAction(item, 'download_pdf')}><FiDownload/> PDF</button>
+                                <button onClick={() => openEmailModal(item)}><FiMail/> Email</button>
+                                <Link href={`/dashboard/transcricoes/${item.transcriptionId}`}><FiEye/> Ver</Link>
+                            </div>
+                          )}
                       </div>
                   ))}
               </div>
@@ -226,53 +185,46 @@ export default function GeneratedContentPage() {
           <PaginationComponent currentPage={pagination.currentPage} totalPages={pagination.totalPages} onPageChange={(page) => setPagination(prev => ({ ...prev, currentPage: page }))} />
         )}
       </div>
-
-      <ActionModal
-        isOpen={isActionModalOpen}
-        onClose={() => setIsActionModalOpen(false)}
-        item={selectedItemForAction}
-        onAction={handleHistoryAction}
-      />
       
-      {isEmailModalOpen && (
+      {isEmailModalOpen && selectedItemForAction && (
           <Modal
             isOpen={isEmailModalOpen}
             onClose={() => setIsEmailModalOpen(false)}
             title="Enviar Conteúdo por Email"
           >
-          <div className={emailModalStyles.emailModalContent}>
-              <p><strong>Assistente:</strong> {selectedItemForAction?.assistantName}</p>
-              <p><strong>Transcrição:</strong> {selectedItemForAction?.transcriptionName}</p>
-              
-              <div className={emailModalStyles.formGroup}>
-              <label htmlFor="emailRecipient">Email do Destinatário:</label>
-              <input 
-                  type="email" 
-                  id="emailRecipient"
-                  value={emailRecipient} 
-                  onChange={(e) => setEmailRecipient(e.target.value)} 
-                  placeholder="exemplo@dominio.com"
-                  required
-              />
-              </div>
+            <div className={emailModalStyles.emailModalContent}>
+                <p><strong>Assistente:</strong> {selectedItemForAction.assistantName}</p>
+                <p><strong>Transcrição:</strong> {selectedItemForAction.transcriptionName}</p>
+                
+                <div className={emailModalStyles.formGroup}>
+                  <label htmlFor="emailRecipient">Email do Destinatário:</label>
+                  <input 
+                      type="email" 
+                      id="emailRecipient"
+                      value={emailRecipient} 
+                      onChange={(e) => setEmailRecipient(e.target.value)} 
+                      placeholder="exemplo@dominio.com"
+                      required
+                  />
+                </div>
 
-              <div className={emailModalStyles.formGroup}>
-              <label>Formato:</label>
-              <div className={emailModalStyles.radioGroup}>
-                  <label>
-                  <input type="radio" name="emailFormat" value="txt" checked={emailFormat === 'txt'} onChange={() => setEmailFormat('txt')} /> Texto
-                  </label>
-                  <label>
-                  <input type="radio" name="emailFormat" value="pdf" checked={emailFormat === 'pdf'} onChange={() => setEmailFormat('pdf')} /> PDF
-                  </label>
-              </div>
-              </div>
+                <div className={emailModalStyles.formGroup}>
+                  <label>Formato do Anexo:</label>
+                  <div className={emailModalStyles.radioGroup}>
+                      <label>
+                        <input type="radio" name="emailFormat" value="txt" checked={emailFormat === 'txt'} onChange={() => setEmailFormat('txt')} /> Texto (TXT)
+                      </label>
+                      <label>
+                        <input type="radio" name="emailFormat" value="pdf" checked={emailFormat === 'pdf'} onChange={() => setEmailFormat('pdf')} /> PDF
+                      </label>
+                  </div>
+                </div>
 
-              <div className={emailModalStyles.modalActions}>
-              <button type="button" className={emailModalStyles.cancelButton} onClick={() => setIsEmailModalOpen(false)}>Cancelar</button>
-              <button type="button" className={emailModalStyles.saveButton} onClick={handleSendEmail}>Enviar Email</button>
-              </div>
-          </div>
+                <div className={emailModalStyles.modalActions}>
+                  <button type="button" className={emailModalStyles.cancelButton} onClick={() => setIsEmailModalOpen(false)}>Cancelar</button>
+                  <button type="button" className={emailModalStyles.saveButton} onClick={() => handleAction(selectedItemForAction, `email_${emailFormat}`)}>Enviar Email</button>
+                </div>
+            </div>
           </Modal>
       )}
     </>

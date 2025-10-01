@@ -21,7 +21,7 @@
 /* --- Grade de Cards --- */
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 2.5rem; }
 
-/* --- Estilo do Card Cinematográfico --- */
+/* --- Estilo do Card --- */
 .card {
   background: var(--color-primary-darkest);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -30,9 +30,20 @@
   display: flex; flex-direction: column;
   box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease-in-out; position: relative;
-  cursor: pointer;
+  cursor: default; /* O card em si não é mais clicável */
 }
-.card:not(.disabledCard):hover { transform: scale(1.03); box-shadow: 0 12px 50px rgba(0, 0, 0, 0.3); border-color: rgba(109, 214, 225, 0.5); }
+.card:not(.disabledCard):hover { 
+  transform: scale(1.03); 
+  box-shadow: 0 12px 50px rgba(0, 0, 0, 0.3); 
+  border-color: rgba(109, 214, 225, 0.5); 
+}
+
+/* Mostra as ações no hover */
+.card:not(.disabledCard):hover .cardActions {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 .disabledCard {
   cursor: not-allowed;
   opacity: 0.7;
@@ -43,7 +54,7 @@
 .cardTitle { font-size: 1.2rem; font-weight: 600; color: #fff; }
 .cardSubtitle { font-size: 0.9rem; color: rgba(255, 255, 255, 0.6); margin-bottom: 1.5rem; flex-grow: 1; }
 .cardSubtitle span { color: rgba(255, 255, 255, 0.8); font-family: var(--font-roboto-mono); }
-.cardFooter { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 1rem; margin-top: 1rem; }
+.cardFooter { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 1rem; margin-top: auto; }
 .metaInfo { display: flex; align-items: center; gap: 0.75rem; }
 .date { font-size: 0.85rem; color: rgba(255, 255, 255, 0.7); }
 .formatTag { font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 4px; color: white; text-transform: uppercase; }
@@ -55,7 +66,53 @@
 .pending { background-color: #3498db; color: white; }
 .failed { background-color: #e74c3c; color: white; }
 
-/* --- Estilos do Modal Interno --- */
+/* --- Ações do Card (NOVO) --- */
+.cardActions {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  padding: 1rem;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  gap: 0.5rem;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.3s ease;
+}
+
+.cardActions button, .cardActions a {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: #fff;
+  padding: 0.5rem;
+  border-radius: 50%;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  width: 40px;
+  height: 40px;
+}
+.cardActions button:hover, .cardActions a:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: #fff;
+  transform: scale(1.1);
+}
+.cardActions svg {
+  width: 18px; /* Força o tamanho do ícone */
+  height: 18px;
+}
+
+
+/* --- Estilos do Modal Interno (Sem Alterações) --- */
 .modalOverlay {
   position: fixed; top: 0; left: 0; width: 100%; height: 100%;
   background-color: rgba(14, 48, 89, 0.6);
@@ -95,7 +152,7 @@
   background-color: #eff6ff;
   color: var(--color-accent);
 }
-.modalActionButton:disabled {
+.modalActionButton[disabled] {
     cursor: not-allowed;
     background-color: #e9ecef;
     color: #adb5bd;
@@ -104,8 +161,8 @@
 .modalActionButton svg { font-size: 1.2rem; }
 .secondaryAction { border-style: dashed; }
 
-/* --- Demais Estilos --- */
-.skeleton { background: linear-gradient(90deg, #2c3e50, #34495e, #2c3e50); background-size: 200% 100%; animation: shimmer-dark 1.5s infinite linear; height: 180px; border-radius: 12px; }
+/* --- Demais Estilos (Sem Alterações) --- */
+.skeleton { background: linear-gradient(90deg, #2c3e50, #34495e, #2c3e50); background-size: 200% 100%; animation: shimmer-dark 1.5s infinite linear; height: 230px; border-radius: 12px; }
 @keyframes shimmer-dark { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 .errorContainer, .noResults { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 4rem; background-color: #fff; border-radius: 16px; color: var(--color-primary); grid-column: 1 / -1; }
 .errorContainer h2, .noResults h3 { font-size: 1.5rem; margin: 1rem 0 0.5rem; color: var(--text-dark); }
