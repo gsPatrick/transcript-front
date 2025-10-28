@@ -25,8 +25,10 @@ import {
 import api from '@/lib/api';
 import Modal from '@/componentsUser/Modal/Modal';
 import AssistantProcessing from '../../../../componentsUser/AgentProcessing/AgentProcessing';
+// Reutilizamos os estilos do modal de email
+import emailModalStyles from '@/componentsUser/AssistantHistory/AssistantHistory.module.css';
 
-// Helper para download de arquivos .txt
+// Helper para download de arquivos .txt (já existente)
 const downloadTxtFile = (filename, text) => {
   const element = document.createElement("a");
   const file = new Blob([text], {type: 'text/plain'});
@@ -37,7 +39,7 @@ const downloadTxtFile = (filename, text) => {
   document.body.removeChild(element);
 };
 
-// Componente de Esqueleto para a página
+// Componente de Esqueleto para a página (já existente)
 const DetailPageSkeleton = () => (
     <div className={styles.page}>
         <header className={styles.header}>
@@ -73,12 +75,12 @@ export default function TranscriptionDetailPage({ params }) {
   const [viewingHistoryItem, setViewingHistoryItem] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
+  // Estados para o modal de e-mail
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
   const [selectedHistoryItemForEmail, setSelectedHistoryItemForEmail] = useState(null);
   const [emailRecipient, setEmailRecipient] = useState('');
   const [emailFormat, setEmailFormat] = useState('pdf');
   
-  // Estados para edição do título
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [newTitle, setNewTitle] = useState('');
 
@@ -111,7 +113,7 @@ export default function TranscriptionDetailPage({ params }) {
             setTranscription(localTranscription);
             setEditedText(localTranscription.transcriptionText);
             setAvailableAssistants(assistantsRes.data);
-            setNewTitle(localTranscription.title); // Inicializa o novo título com o título atual
+            setNewTitle(localTranscription.title);
         }
         
         const detailedHistoryPromises = historyRes.data.history.map(item => 
@@ -122,7 +124,7 @@ export default function TranscriptionDetailPage({ params }) {
         const formattedHistory = detailedHistoryResponses.map(res => ({
           ...res.data,
           assistantName: res.data.assistant ? res.data.assistant.name : 'Assistente Desconhecido',
-          transcriptionName: localTranscription.title, // Usa o título editável
+          transcriptionName: localTranscription.title,
         }));
 
         setAssistantHistory(formattedHistory);
@@ -203,62 +205,52 @@ export default function TranscriptionDetailPage({ params }) {
     }, pollInterval);
   };
   
-  const handleHistoryAction = async (item, action) => {
-    if (action === 'email') {
-      setSelectedHistoryItemForEmail(item);
-      setIsEmailModalOpen(true);
-      return;
-    }
-
-    const toastId = toast.loading(`Processando: ${action.replace('_', ' ')}...`);
-    try {
-      const response = await api.post(
-        `/history/${item.id}/actions`,
-        { action },
-        { responseType: 'blob' }
-      );
-
-      const disposition = response.headers['content-disposition'];
-      const filename = disposition?.split('filename=')[1]?.replaceAll('"', '') || `${item.transcriptionName}.${action.split('_')[1]}`;
-      
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', filename);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-      
-      toast.success('Download iniciado!', { id: toastId });
-    } catch (err) {
-      toast.error('Não foi possível processar a sua solicitação.', { id: toastId });
-    }
+  const openEmailModal = (item) => {
+    setSelectedHistoryItemForEmail(item);
+    setEmailRecipient('');
+    setEmailFormat('pdf');
+    setIsEmailModalOpen(true);
   };
 
-  const handleSendEmail = async () => {
-    if (!selectedHistoryItemForEmail || !emailRecipient) {
-      toast.error("Por favor, preencha o email do destinatário.");
-      return;
+  const handleHistoryAction = async (item, action, options = {}) => {
+    if (action === 'email') {
+        openEmailModal(item);
+        return;
     }
-    const action = emailFormat === 'pdf' ? 'email_pdf' : 'email_txt';
-    const toastId = toast.loading(`Enviando email (${emailFormat.toUpperCase()})...`);
+
+    const isDownload = action.startsWith('download');
+    const toastMessage = isDownload ? 'Iniciando download...' : 'Enviando email...';
+    const toastId = toast.loading(toastMessage);
+
     try {
-      await api.post(`/history/${selectedHistoryItemForEmail.id}/actions`, {
-        action,
-        recipientEmail: emailRecipient,
-      });
-      toast.success('Email enviado com sucesso!', { id: toastId });
-      setIsEmailModalOpen(false);
+        const payload = { action, ...options };
+        const response = await api.post(`/history/${item.id}/actions`, payload, { responseType: isDownload ? 'blob' : 'json' });
+
+        if (isDownload) {
+            const disposition = response.headers['content-disposition'];
+            const filename = disposition?.split('filename=')[1]?.replaceAll('"', '') || `${item.transcriptionName}.${action.split('_')[1]}`;
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', filename);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+            toast.success('Download iniciado!', { id: toastId });
+        } else {
+            toast.success(response.data.message || 'Email enviado com sucesso!', { id: toastId });
+            setIsEmailModalOpen(false);
+        }
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Não foi possível enviar o email.', { id: toastId });
+        toast.error(err.response?.data?.message || 'Não foi possível processar a sua solicitação.', { id: toastId });
     }
   };
   
   const handleTitleSave = async () => {
     if (newTitle.trim() === '' || newTitle === transcription.title) {
         setIsEditingTitle(false);
-        setNewTitle(transcription.title); // Garante que o estado reflita o valor real
+        setNewTitle(transcription.title);
         return;
     }
     const toastId = toast.loading('Salvando novo nome...');
@@ -268,7 +260,7 @@ export default function TranscriptionDetailPage({ params }) {
         toast.success('Nome atualizado!', { id: toastId });
     } catch (err) {
         toast.error('Não foi possível salvar.', { id: toastId });
-        setNewTitle(transcription.title); // Reverte em caso de erro
+        setNewTitle(transcription.title);
     } finally {
         setIsEditingTitle(false);
     }
@@ -414,11 +406,11 @@ export default function TranscriptionDetailPage({ params }) {
           onClose={() => setIsEmailModalOpen(false)} 
           title="Enviar Conteúdo por Email"
         >
-          <div className={styles.emailModalContent}>
+          <div className={emailModalStyles.emailModalContent}>
             <p><strong>Assistente:</strong> {selectedHistoryItemForEmail?.assistantName}</p>
             <p><strong>Transcrição:</strong> {selectedHistoryItemForEmail?.transcriptionName}</p>
             
-            <div className={styles.formGroup}>
+            <div className={emailModalStyles.formGroup}>
               <label htmlFor="emailRecipient">Email do Destinatário:</label>
               <input 
                 type="email" 
@@ -430,9 +422,9 @@ export default function TranscriptionDetailPage({ params }) {
               />
             </div>
 
-            <div className={styles.formGroup}>
+            <div className={emailModalStyles.formGroup}>
               <label>Formato:</label>
-              <div className={styles.radioGroup}>
+              <div className={emailModalStyles.radioGroup}>
                 <label>
                   <input type="radio" name="emailFormat" value="txt" checked={emailFormat === 'txt'} onChange={() => setEmailFormat('txt')} /> Texto
                 </label>
@@ -442,9 +434,9 @@ export default function TranscriptionDetailPage({ params }) {
               </div>
             </div>
 
-            <div className={styles.modalActions}>
-              <button type="button" className={styles.cancelButton} onClick={() => setIsEmailModalOpen(false)}>Cancelar</button>
-              <button type="button" className={styles.saveButton} onClick={handleSendEmail}>Enviar Email</button>
+            <div className={emailModalStyles.modalActions}>
+              <button type="button" className={emailModalStyles.cancelButton} onClick={() => setIsEmailModalOpen(false)}>Cancelar</button>
+              <button type="button" className={emailModalStyles.saveButton} onClick={() => handleHistoryAction(selectedHistoryItemForEmail, `email_${emailFormat}`, { recipientEmail: emailRecipient })}>Enviar Email</button>
             </div>
           </div>
         </Modal>

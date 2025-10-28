@@ -1,0 +1,109 @@
+/* src/app/reset-password/page.module.css */
+
+.pageWrapper {
+  padding-top: 120px;
+  padding-bottom: 4rem;
+  background-color: var(--color-primary-darkest);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.form { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 1.5rem; 
+  width: 100%;
+}
+
+.formGroup { 
+  display: flex; 
+  flex-direction: column; 
+}
+
+.formGroup label { 
+  color: var(--background-soft); 
+  margin-bottom: 0.5rem; 
+  font-size: 0.9rem; 
+}
+
+.formGroup input {
+  background-color: var(--color-primary-dark);
+  border: 1px solid rgba(12, 102, 212, 0.3);
+  color: var(--text-light);
+  padding: 0.9rem 1.2rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.formGroup input:focus {
+  outline: none;
+  border-color: var(--color-complementary);
+  box-shadow: 0 0 10px rgba(109, 214, 225, 0.3);
+}
+
+.submitButton {
+  background: var(--color-accent);
+  color: var(--text-light);
+  font-size: 1.1rem;
+  font-weight: 600;
+  padding: 0.9rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: all 0.3s ease;
+  text-align: center;
+  text-decoration: none;
+  display: block;
+  width: 100%;
+}
+
+.submitButton:hover:not(:disabled) {
+  background-color: #0a58b8;
+  transform: translateY(-3px);
+  box-shadow: 0 4px 15px rgba(12, 102, 212, 0.3);
+}
+
+.submitButton:disabled {
+  background-color: #0a4a9c;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.errorBox {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background-color: rgba(231, 76, 60, 0.2);
+  border: 1px solid rgba(231, 76, 60, 0.5);
+  color: #ffadad;
+  padding: 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.finalMessage {
+  text-align: center;
+  color: var(--text-light);
+}
+
+.successIcon {
+  font-size: 3rem;
+  color: #2ecc71;
+  margin-bottom: 1rem;
+}
+
+.finalMessage h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.finalMessage p {
+  line-height: 1.7;
+  opacity: 0.9;
+  margin-bottom: 2rem;
+}

@@ -52,8 +52,8 @@ export default function Footer() {
 
         <div className={styles.footerBottom}>
           <p className={styles.copyright}>
-            © {currentYear} TranscriMedX. Todos os direitos reservados.
           </p>
+            © {currentYear} TranscriMedX. Todos os direitos reservados.
         </div>
       </div>
     </footer>

@@ -5,10 +5,11 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import { toast } from 'react-hot-toast';
 import styles from './page.module.css';
-import { FiSearch, FiAlertCircle, FiCpu, FiFileText, FiMail, FiX, FiDownload, FiEye } from 'react-icons/fi';
+import { FiSearch, FiAlertCircle, FiCpu, FiFileText, FiMail, FiDownload, FiEye } from 'react-icons/fi';
 import api from '@/lib/api';
 import Modal from '@/componentsUser/Modal/Modal';
-import emailModalStyles from '@/componentsUser/AssistantHistory/AssistantHistory.module.css'; // Reutilizando CSS do modal
+// Reutilizamos os estilos do modal de email que já existem para consistência
+import emailModalStyles from '@/componentsUser/AssistantHistory/AssistantHistory.module.css';
 
 export default function GeneratedContentPage() {
   const [history, setHistory] = useState([]);
@@ -17,18 +18,17 @@ export default function GeneratedContentPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Estados para o modal de e-mail
   const [selectedItemForAction, setSelectedItemForAction] = useState(null);
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
   const [emailRecipient, setEmailRecipient] = useState('');
-  const [emailFormat, setEmailFormat] = useState('pdf');
+  const [emailFormat, setEmailFormat] = useState('pdf'); // Padrão PDF para e-mails
 
   const fetchHistory = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
       const params = new URLSearchParams({ page: pagination.currentPage, limit: 9 });
-      // Se a busca no backend estiver implementada, adicione o searchTerm aqui
-      // params.append('searchTerm', searchTerm);
       const response = await api.get(`/assistants/my-history?${params.toString()}`);
       
       const formattedHistory = response.data.history.map(item => ({
@@ -58,10 +58,12 @@ export default function GeneratedContentPage() {
 
   const openEmailModal = (item) => {
     setSelectedItemForAction(item);
+    setEmailRecipient(''); // Limpa o campo
+    setEmailFormat('pdf'); // Reseta para o padrão
     setIsEmailModalOpen(true);
   };
   
-  const handleAction = async (item, action) => {
+  const handleAction = async (item, action, options = {}) => {
     if (!item || !action) return;
 
     const isDownload = action.startsWith('download');
@@ -69,10 +71,10 @@ export default function GeneratedContentPage() {
     const toastId = toast.loading(toastMessage);
 
     try {
+        const payload = { action, ...options };
         const response = await api.post(
             `/history/${item.id}/actions`,
-            { action },
-            // Configuração crucial para downloads
+            payload,
             { responseType: isDownload ? 'blob' : 'json' }
         );
 
@@ -92,6 +94,7 @@ export default function GeneratedContentPage() {
         } else {
             // Se for email, a resposta será um JSON com uma mensagem de sucesso
             toast.success(response.data.message || 'Email enviado com sucesso!', { id: toastId });
+            setIsEmailModalOpen(false); // Fecha o modal após o envio
         }
     } catch (err) {
         const errorMessage = err.response?.data?.message || `Não foi possível ${isDownload ? 'baixar o arquivo' : 'enviar o email'}.`;
@@ -162,10 +165,10 @@ export default function GeneratedContentPage() {
 
                           {item.status === 'completed' && (
                             <div className={styles.cardActions}>
-                                <button onClick={() => handleAction(item, 'download_txt')}><FiDownload/> TXT</button>
-                                <button onClick={() => handleAction(item, 'download_pdf')}><FiDownload/> PDF</button>
-                                <button onClick={() => openEmailModal(item)}><FiMail/> Email</button>
-                                <Link href={`/dashboard/transcricoes/${item.transcriptionId}`}><FiEye/> Ver</Link>
+                                <button onClick={() => handleAction(item, 'download_txt')} title="Baixar TXT"><FiDownload/></button>
+                                <button onClick={() => handleAction(item, 'download_pdf')} title="Baixar PDF"><FiFileText/></button>
+                                <button onClick={() => openEmailModal(item)} title="Enviar por Email"><FiMail/></button>
+                                {item.transcriptionId && <Link href={`/dashboard/transcricoes/${item.transcriptionId}`} title="Ver Transcrição Original"><FiEye/></Link>}
                             </div>
                           )}
                       </div>
@@ -222,7 +225,7 @@ export default function GeneratedContentPage() {
 
                 <div className={emailModalStyles.modalActions}>
                   <button type="button" className={emailModalStyles.cancelButton} onClick={() => setIsEmailModalOpen(false)}>Cancelar</button>
-                  <button type="button" className={emailModalStyles.saveButton} onClick={() => handleAction(selectedItemForAction, `email_${emailFormat}`)}>Enviar Email</button>
+                  <button type="button" className={emailModalStyles.saveButton} onClick={() => handleAction(selectedItemForAction, `email_${emailFormat}`, { recipientEmail: emailRecipient })}>Enviar Email</button>
                 </div>
             </div>
           </Modal>

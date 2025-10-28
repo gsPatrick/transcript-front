@@ -9,10 +9,12 @@ import UserDetailsModal from '@/componentsAdmin/UserModals/UserDetailsModal';
 import UserEditModal from '@/componentsAdmin/UserModals/UserEditModal';
 import AssignPlanModal from '@/componentsAdmin/UserModals/AssignPlanModal';
 import UserCreateModal from '@/componentsAdmin/UserModals/UserCreateModal'; 
-import { FiSearch, FiUserPlus, FiFilter, FiEye, FiPackage, FiEdit, FiTrash2, FiAlertCircle } from 'react-icons/fi';
+// <<< 1. IMPORTAR O NOVO MODAL >>>
+import ResetPasswordModal from '@/componentsAdmin/UserModals/ResetPasswordModal';
+import { FiSearch, FiUserPlus, FiFilter, FiEye, FiPackage, FiEdit, FiTrash2, FiAlertCircle, FiLock } from 'react-icons/fi';
 import api from '@/lib/api';
 
-// Hook useDebounce para otimizar a busca
+// Hook useDebounce (sem alterações)
 function useDebounce(value, delay) {
   const [debouncedValue, setDebouncedValue] = useState(value);
   useEffect(() => {
@@ -36,6 +38,8 @@ export default function AdminUsersPage() {
   const [editingUser, setEditingUser] = useState(null);
   const [assigningPlanUser, setAssigningPlanUser] = useState(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  // <<< 2. NOVO ESTADO PARA O MODAL DE RESET DE SENHA >>>
+  const [resettingPasswordUser, setResettingPasswordUser] = useState(null);
   
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
@@ -106,6 +110,18 @@ export default function AdminUsersPage() {
     } catch (err) { toast.error(err.response?.data?.message || 'Erro ao criar usuário.', { id: toastId }); }
   };
   
+  // <<< 3. NOVA FUNÇÃO PARA CHAMAR A API DE RESET DE SENHA >>>
+  const handleResetPassword = async (userId, newPassword) => {
+    const toastId = toast.loading('Redefinindo senha...');
+    try {
+      await api.put(`/admin/users/${userId}/password`, { newPassword });
+      toast.success('Senha do usuário redefinida com sucesso!', { id: toastId });
+      setResettingPasswordUser(null); // Fecha o modal
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Erro ao redefinir a senha.', { id: toastId });
+    }
+  };
+  
   const getStatusClass = (user) => (user.planId && new Date(user.planExpiresAt) > new Date() ? styles.active : styles.inactive);
   const getStatusText = (user) => (user.planId && new Date(user.planExpiresAt) > new Date() ? 'Ativo' : 'Inativo');
   const handleFilterChange = (e) => { setFilterPlan(e.target.value); setPagination(p => ({ ...p, currentPage: 1 })); };
@@ -155,6 +171,8 @@ export default function AdminUsersPage() {
                       <ActionMenu>
                         <button onClick={() => setViewingUser(user)} className={styles.menuItem}><FiEye /> Ver Detalhes</button>
                         <button onClick={() => setEditingUser(user)} className={styles.menuItem}><FiEdit /> Editar Usuário</button>
+                        {/* <<< 4. ADICIONAR OPÇÃO DE RESET DE SENHA NO MENU >>> */}
+                        <button onClick={() => setResettingPasswordUser(user)} className={styles.menuItem}><FiLock /> Redefinir Senha</button>
                         <button onClick={() => setAssigningPlanUser(user)} className={styles.menuItem}><FiPackage /> Atribuir Plano</button>
                         <button onClick={() => handleDeleteUser(user.id)} className={`${styles.menuItem} ${styles.deleteMenuItem}`}><FiTrash2 /> Excluir</button>
                       </ActionMenu>
@@ -172,6 +190,15 @@ export default function AdminUsersPage() {
       {editingUser && <UserEditModal user={editingUser} onSave={handleUpdateUser} onClose={() => setEditingUser(null)} />}
       {assigningPlanUser && <AssignPlanModal user={assigningPlanUser} plans={plans} onSave={handleAssignPlan} onClose={() => setAssigningPlanUser(null)} />}
       {isCreateModalOpen && <UserCreateModal onSave={handleCreateUser} onClose={() => setIsCreateModalOpen(false)} />}
+      
+      {/* <<< 5. RENDERIZAR O NOVO MODAL >>> */}
+      {resettingPasswordUser && (
+        <ResetPasswordModal
+          user={resettingPasswordUser}
+          onSave={handleResetPassword}
+          onClose={() => setResettingPasswordUser(null)}
+        />
+      )}
     </div>
   );
 }
