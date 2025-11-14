@@ -8,7 +8,6 @@ import styles from './page.module.css';
 import { FiSearch, FiAlertCircle, FiCpu, FiFileText, FiMail, FiDownload, FiEye } from 'react-icons/fi';
 import api from '@/lib/api';
 import Modal from '@/componentsUser/Modal/Modal';
-// Reutilizamos os estilos do modal de email que já existem para consistência
 import emailModalStyles from '@/componentsUser/AssistantHistory/AssistantHistory.module.css';
 
 export default function GeneratedContentPage() {
@@ -18,17 +17,19 @@ export default function GeneratedContentPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Estados para o modal de e-mail
   const [selectedItemForAction, setSelectedItemForAction] = useState(null);
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
   const [emailRecipient, setEmailRecipient] = useState('');
-  const [emailFormat, setEmailFormat] = useState('pdf'); // Padrão PDF para e-mails
+  const [emailFormat, setEmailFormat] = useState('pdf');
 
   const fetchHistory = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
       const params = new URLSearchParams({ page: pagination.currentPage, limit: 9 });
+      if (searchTerm) {
+        params.append('searchTerm', searchTerm);
+      }
       const response = await api.get(`/assistants/my-history?${params.toString()}`);
       
       const formattedHistory = response.data.history.map(item => ({
@@ -50,7 +51,7 @@ export default function GeneratedContentPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [pagination.currentPage]);
+  }, [pagination.currentPage, searchTerm]);
 
   useEffect(() => {
     fetchHistory();
@@ -58,8 +59,8 @@ export default function GeneratedContentPage() {
 
   const openEmailModal = (item) => {
     setSelectedItemForAction(item);
-    setEmailRecipient(''); // Limpa o campo
-    setEmailFormat('pdf'); // Reseta para o padrão
+    setEmailRecipient('');
+    setEmailFormat('pdf');
     setIsEmailModalOpen(true);
   };
   
@@ -80,7 +81,14 @@ export default function GeneratedContentPage() {
 
         if (isDownload) {
             const disposition = response.headers['content-disposition'];
-            const filename = disposition?.split('filename=')[1]?.replaceAll('"', '') || `${item.transcriptionName.replace(/\.[^/.]+$/, "")}.${action.split('_')[1]}`;
+            let filename = `${item.transcriptionName.replace(/\.[^/.]+$/, "")}.${action.split('_')[1]}`; // Fallback
+            if (disposition && disposition.indexOf('attachment') !== -1) {
+                const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+                const matches = filenameRegex.exec(disposition);
+                if (matches != null && matches[1]) {
+                  filename = matches[1].replace(/['"]/g, '');
+                }
+            }
             
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
@@ -92,9 +100,8 @@ export default function GeneratedContentPage() {
             window.URL.revokeObjectURL(url);
             toast.success('Download iniciado!', { id: toastId });
         } else {
-            // Se for email, a resposta será um JSON com uma mensagem de sucesso
             toast.success(response.data.message || 'Email enviado com sucesso!', { id: toastId });
-            setIsEmailModalOpen(false); // Fecha o modal após o envio
+            setIsEmailModalOpen(false);
         }
     } catch (err) {
         const errorMessage = err.response?.data?.message || `Não foi possível ${isDownload ? 'baixar o arquivo' : 'enviar o email'}.`;
@@ -104,12 +111,9 @@ export default function GeneratedContentPage() {
   };
 
   const filteredHistory = useMemo(() => {
-    if (!searchTerm) return history;
-    return history.filter(item =>
-      (item.assistantName?.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (item.transcriptionName?.toLowerCase().includes(searchTerm.toLowerCase()))
-    );
-  }, [searchTerm, history]);
+    // A busca agora é feita no backend, então o frontend apenas exibe os resultados.
+    return history;
+  }, [history]);
 
   const formatDate = (dateString) => {
     if (!dateString) return '-';
@@ -131,7 +135,7 @@ export default function GeneratedContentPage() {
         <div className={styles.controls}>
           <div className={styles.searchBox}>
             <FiSearch className={styles.searchIcon} />
-            <input type="text" placeholder="Buscar por assistente ou nome da transcrição..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+            <input type="text" placeholder="Buscar..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
           </div>
         </div>
 
@@ -165,9 +169,16 @@ export default function GeneratedContentPage() {
 
                           {item.status === 'completed' && (
                             <div className={styles.cardActions}>
+                                {/* Ação de Download TXT existente */}
                                 <button onClick={() => handleAction(item, 'download_txt')} title="Baixar TXT"><FiDownload/></button>
+                                
+                                {/* <<< NOVA OPÇÃO DE DOWNLOAD PDF >>> */}
                                 <button onClick={() => handleAction(item, 'download_pdf')} title="Baixar PDF"><FiFileText/></button>
+                                
+                                {/* Ação de Email existente */}
                                 <button onClick={() => openEmailModal(item)} title="Enviar por Email"><FiMail/></button>
+
+                                {/* Ação de Ver Original existente */}
                                 {item.transcriptionId && <Link href={`/dashboard/transcricoes/${item.transcriptionId}`} title="Ver Transcrição Original"><FiEye/></Link>}
                             </div>
                           )}

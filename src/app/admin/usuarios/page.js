@@ -1,20 +1,19 @@
 // src/app/admin/usuarios/page.js
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { toast } from 'react-hot-toast';
 import styles from './page.module.css';
 import ActionMenu from '@/componentsUser/ActionMenu/ActionMenu';
 import UserDetailsModal from '@/componentsAdmin/UserModals/UserDetailsModal';
 import UserEditModal from '@/componentsAdmin/UserModals/UserEditModal';
 import AssignPlanModal from '@/componentsAdmin/UserModals/AssignPlanModal';
-import UserCreateModal from '@/componentsAdmin/UserModals/UserCreateModal'; 
-// <<< 1. IMPORTAR O NOVO MODAL >>>
+import UserCreateModal from '@/componentsAdmin/UserModals/UserCreateModal';
 import ResetPasswordModal from '@/componentsAdmin/UserModals/ResetPasswordModal';
 import { FiSearch, FiUserPlus, FiFilter, FiEye, FiPackage, FiEdit, FiTrash2, FiAlertCircle, FiLock } from 'react-icons/fi';
 import api from '@/lib/api';
 
-// Hook useDebounce (sem alterações)
+// Este hook não é mais estritamente necessário para a busca, mas pode ser mantido.
 function useDebounce(value, delay) {
   const [debouncedValue, setDebouncedValue] = useState(value);
   useEffect(() => {
@@ -25,9 +24,8 @@ function useDebounce(value, delay) {
 }
 
 export default function AdminUsersPage() {
-  const [users, setUsers] = useState([]);
+  const [allUsers, setAllUsers] = useState([]); 
   const [plans, setPlans] = useState([]);
-  const [pagination, setPagination] = useState({ currentPage: 1, totalPages: 1 });
   const [searchTerm, setSearchTerm] = useState('');
   const [filterPlan, setFilterPlan] = useState('Todos');
   const [isLoading, setIsLoading] = useState(true);
@@ -38,46 +36,71 @@ export default function AdminUsersPage() {
   const [editingUser, setEditingUser] = useState(null);
   const [assigningPlanUser, setAssigningPlanUser] = useState(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  // <<< 2. NOVO ESTADO PARA O MODAL DE RESET DE SENHA >>>
   const [resettingPasswordUser, setResettingPasswordUser] = useState(null);
   
-  const debouncedSearchTerm = useDebounce(searchTerm, 500);
-
-  const fetchUsers = useCallback(async () => {
+  // Função para buscar os dados iniciais (agora só executa uma vez)
+  const fetchData = async () => {
     setIsLoading(true);
     setError(null);
     try {
-      const params = new URLSearchParams({
-        page: pagination.currentPage, limit: 10,
-        searchTerm: debouncedSearchTerm, planName: filterPlan,
-      });
-      const response = await api.get(`/admin/users?${params.toString()}`);
-      setUsers(response.data.users);
-      setPagination({ currentPage: response.data.currentPage, totalPages: response.data.totalPages });
+      const [usersResponse, plansResponse] = await Promise.all([
+        api.get('/admin/users'), // A API agora ignora parâmetros e retorna todos
+        api.get('/admin/plans')
+      ]);
+      
+      // <<< A CORREÇÃO DEFINITIVA ESTÁ AQUI >>>
+      // A API agora retorna um array diretamente.
+      setAllUsers(usersResponse.data); 
+      setPlans(plansResponse.data);
+
     } catch (err) {
-      const msg = err.response?.data?.message || 'Erro ao buscar usuários.';
-      setError(msg); toast.error(msg);
-    } finally { setIsLoading(false); }
-  }, [pagination.currentPage, debouncedSearchTerm, filterPlan]);
+      const msg = err.response?.data?.message || 'Erro ao buscar dados iniciais.';
+      setError(msg); 
+      toast.error(msg);
+    } finally { 
+      setIsLoading(false); 
+    }
+  };
 
   useEffect(() => {
-    const fetchPlans = async () => {
-      try {
-        const response = await api.get('/admin/plans');
-        setPlans(response.data);
-      } catch (err) { toast.error('Não foi possível carregar a lista de planos.'); }
-    };
-    fetchPlans();
-  }, []);
+    fetchData();
+  }, []); // Array de dependências vazio para executar apenas uma vez na montagem.
 
-  useEffect(() => { fetchUsers(); }, [fetchUsers]);
+  // A lógica de filtro agora roda 100% no frontend, de forma instantânea.
+  const filteredUsers = useMemo(() => {
+    // Garante que allUsers é um array antes de tentar iterar
+    if (!Array.isArray(allUsers)) {
+      return [];
+    }
+    
+    let users = [...allUsers];
+
+    if (searchTerm) {
+      const lowercasedTerm = searchTerm.toLowerCase();
+      users = users.filter(user =>
+        user.name.toLowerCase().includes(lowercasedTerm) ||
+        user.email.toLowerCase().includes(lowercasedTerm)
+      );
+    }
+
+    if (filterPlan && filterPlan !== 'Todos') {
+      if (filterPlan === 'Nenhum') {
+        users = users.filter(user => !user.currentPlan);
+      } else {
+        users = users.filter(user => user.currentPlan?.name === filterPlan);
+      }
+    }
+
+    return users;
+  }, [allUsers, searchTerm, filterPlan]);
   
+  // Funções de manipulação (handle) que recarregam os dados após uma ação.
   const handleUpdateUser = async (userId, data) => {
     const toastId = toast.loading('Atualizando usuário...');
     try {
       await api.put(`/admin/users/${userId}`, data);
       toast.success('Usuário atualizado!', { id: toastId });
-      setEditingUser(null); fetchUsers();
+      setEditingUser(null); fetchData();
     } catch (err) { toast.error(err.response?.data?.message || 'Erro ao atualizar.', { id: toastId }); }
   };
 
@@ -87,7 +110,7 @@ export default function AdminUsersPage() {
       try {
         await api.delete(`/admin/users/${userId}`);
         toast.success('Usuário excluído!', { id: toastId });
-        fetchUsers();
+        fetchData();
       } catch (err) { toast.error(err.response?.data?.message || 'Erro ao excluir.', { id: toastId }); }
     }
   };
@@ -97,7 +120,7 @@ export default function AdminUsersPage() {
     try {
       await api.post('/admin/users/assign-plan', { userId, planId });
       toast.success('Plano atribuído!', { id: toastId });
-      setAssigningPlanUser(null); fetchUsers();
+      setAssigningPlanUser(null); fetchData();
     } catch (err) { toast.error(err.response?.data?.message || 'Erro ao atribuir.', { id: toastId }); }
   };
 
@@ -106,17 +129,16 @@ export default function AdminUsersPage() {
     try {
       await api.post('/auth/register', userData); 
       toast.success('Usuário criado com sucesso!', { id: toastId });
-      setIsCreateModalOpen(false); fetchUsers();
+      setIsCreateModalOpen(false); fetchData();
     } catch (err) { toast.error(err.response?.data?.message || 'Erro ao criar usuário.', { id: toastId }); }
   };
   
-  // <<< 3. NOVA FUNÇÃO PARA CHAMAR A API DE RESET DE SENHA >>>
   const handleResetPassword = async (userId, newPassword) => {
     const toastId = toast.loading('Redefinindo senha...');
     try {
       await api.put(`/admin/users/${userId}/password`, { newPassword });
       toast.success('Senha do usuário redefinida com sucesso!', { id: toastId });
-      setResettingPasswordUser(null); // Fecha o modal
+      setResettingPasswordUser(null);
     } catch (err) {
       toast.error(err.response?.data?.message || 'Erro ao redefinir a senha.', { id: toastId });
     }
@@ -124,8 +146,6 @@ export default function AdminUsersPage() {
   
   const getStatusClass = (user) => (user.planId && new Date(user.planExpiresAt) > new Date() ? styles.active : styles.inactive);
   const getStatusText = (user) => (user.planId && new Date(user.planExpiresAt) > new Date() ? 'Ativo' : 'Inativo');
-  const handleFilterChange = (e) => { setFilterPlan(e.target.value); setPagination(p => ({ ...p, currentPage: 1 })); };
-  const handleSearchChange = (e) => { setSearchTerm(e.target.value); setPagination(p => ({ ...p, currentPage: 1 })); };
   
   return (
     <div className={styles.page}>
@@ -137,11 +157,11 @@ export default function AdminUsersPage() {
       <div className={styles.controls}>
         <div className={styles.searchBox}>
           <FiSearch />
-          <input type="text" placeholder="Buscar por nome ou e-mail..." value={searchTerm} onChange={handleSearchChange} />
+          <input type="text" placeholder="Buscar por nome ou e-mail..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
         </div>
         <div className={styles.filterGroup}>
           <FiFilter />
-          <select value={filterPlan} onChange={handleFilterChange}>
+          <select value={filterPlan} onChange={(e) => setFilterPlan(e.target.value)}>
             <option value="Todos">Todos os Planos</option>
             {plans.map(plan => <option key={plan.id} value={plan.name}>{plan.name}</option>)}
             <option value="Nenhum">Nenhum Plano</option>
@@ -160,7 +180,7 @@ export default function AdminUsersPage() {
                 <tr><th>Nome</th><th>E-mail</th><th>Plano Atual</th><th>Status</th><th>Data de Cadastro</th><th>Ações</th></tr>
               </thead>
               <tbody>
-                {users.length > 0 ? users.map(user => (
+                {filteredUsers.length > 0 ? filteredUsers.map(user => (
                   <tr key={user.id}>
                     <td className={styles.userCell}><div className={styles.avatar}>{user.name.charAt(0).toUpperCase()}</div>{user.name}</td>
                     <td>{user.email}</td>
@@ -171,18 +191,16 @@ export default function AdminUsersPage() {
                       <ActionMenu>
                         <button onClick={() => setViewingUser(user)} className={styles.menuItem}><FiEye /> Ver Detalhes</button>
                         <button onClick={() => setEditingUser(user)} className={styles.menuItem}><FiEdit /> Editar Usuário</button>
-                        {/* <<< 4. ADICIONAR OPÇÃO DE RESET DE SENHA NO MENU >>> */}
                         <button onClick={() => setResettingPasswordUser(user)} className={styles.menuItem}><FiLock /> Redefinir Senha</button>
                         <button onClick={() => setAssigningPlanUser(user)} className={styles.menuItem}><FiPackage /> Atribuir Plano</button>
                         <button onClick={() => handleDeleteUser(user.id)} className={`${styles.menuItem} ${styles.deleteMenuItem}`}><FiTrash2 /> Excluir</button>
                       </ActionMenu>
                     </td>
                   </tr>
-                )) : ( <tr><td colSpan="6" className={styles.noResults}>Nenhum usuário encontrado.</td></tr> )}
+                )) : ( <tr><td colSpan="6" className={styles.noResults}>Nenhum usuário encontrado com os filtros atuais.</td></tr> )}
               </tbody>
             </table>
           </div>
-          {/* TODO: Paginação */}
         </>
       )}
       
@@ -191,7 +209,6 @@ export default function AdminUsersPage() {
       {assigningPlanUser && <AssignPlanModal user={assigningPlanUser} plans={plans} onSave={handleAssignPlan} onClose={() => setAssigningPlanUser(null)} />}
       {isCreateModalOpen && <UserCreateModal onSave={handleCreateUser} onClose={() => setIsCreateModalOpen(false)} />}
       
-      {/* <<< 5. RENDERIZAR O NOVO MODAL >>> */}
       {resettingPasswordUser && (
         <ResetPasswordModal
           user={resettingPasswordUser}
